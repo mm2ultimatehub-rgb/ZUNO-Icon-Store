@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  listIcons, listLikedIconIds, signInWithUsername, signOut, signUpWithUsername, toggleIconLike,
+  listIcons, listLikedIconIds, resendSignupOtp, signInWithUsername, signOut, signUpWithUsername, toggleIconLike, verifySignupOtp,
   uploadIcon, type IconCategory, type StoreIcon,
 } from "./lib/iconStore";
 import { supabase, supabaseReady } from "./lib/supabase";
@@ -37,6 +37,8 @@ export default function App() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [signupOtp, setSignupOtp] = useState("");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadBusy, setUploadBusy] = useState(false);
   const [uploadError, setUploadError] = useState("");
@@ -100,7 +102,9 @@ export default function App() {
       if (authMode === "register") {
         const result = await signUpWithUsername({ username, email, password });
         if (!result.session) {
-          setAuthMessage("Hesabın oluşturuldu. Devam etmek için e-posta adresindeki doğrulama bağlantısına tıkla.");
+          setPendingEmail(email.trim());
+          setSignupOtp("");
+          setAuthMessage("E-posta adresine gönderilen 6 haneli kodu aşağıya gir.");
         } else {
           setUser(result.user);
           setAuthOpen(false);
@@ -117,6 +121,25 @@ export default function App() {
     } finally {
       setAuthBusy(false);
     }
+  }
+
+  async function handleVerifySignupOtp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAuthBusy(true); setAuthError(""); setAuthMessage("");
+    try {
+      const result = await verifySignupOtp(pendingEmail, signupOtp);
+      if (!result.session || !result.user) throw new Error("Doğrulama tamamlandı ancak oturum açılamadı. Giriş yapmayı dene.");
+      setUser(result.user); setPendingEmail(""); setSignupOtp(""); setPassword(""); setAuthOpen(false);
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : "Kod doğrulanamadı. Kontrol edip tekrar dene.");
+    } finally { setAuthBusy(false); }
+  }
+
+  async function handleResendSignupOtp() {
+    setAuthBusy(true); setAuthError(""); setAuthMessage("");
+    try { await resendSignupOtp(pendingEmail); setAuthMessage("Yeni doğrulama kodu e-posta adresine gönderildi."); }
+    catch (error) { setAuthError(error instanceof Error ? error.message : "Kod gönderilemedi. Biraz sonra tekrar dene."); }
+    finally { setAuthBusy(false); }
   }
 
   async function handleLogout() {
@@ -199,13 +222,20 @@ export default function App() {
         <button className="modal-close" onClick={() => setAuthOpen(false)} aria-label="Kapat"><IconMark name="close" /></button>
         <div className="modal-emblem">Z</div><div className="eyebrow">ZUNO COMMUNITY</div><h2 id="auth-title">{authMode === "login" ? "Tekrar hoş geldin." : "Aramıza katıl."}</h2><p className="modal-subtitle">{authMode === "login" ? "Koleksiyonunu keşfetmeye devam et." : "Bir hesap oluştur ve tasarımlarını paylaş."}</p>
         <div className="auth-tabs"><button className={authMode === "login" ? "selected" : ""} onClick={() => { setAuthMode("login"); setAuthError(""); setAuthMessage(""); }}>Giriş yap</button><button className={authMode === "register" ? "selected" : ""} onClick={() => { setAuthMode("register"); setAuthError(""); setAuthMessage(""); }}>Kayıt ol</button></div>
-        <form onSubmit={event => void handleAuth(event)} className="modal-form">
+        {pendingEmail ? <form onSubmit={event => void handleVerifySignupOtp(event)} className="modal-form">
+          <p className="otp-instructions"><strong>{pendingEmail}</strong> adresine gönderilen doğrulama kodunu gir. Gelen kutunu ve spam klasörünü kontrol et.</p>
+          <label>6 haneli doğrulama kodu<input required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={signupOtp} onChange={event => setSignupOtp(event.target.value.replace(/\\D/g, "").slice(0, 6))} placeholder="000000" /></label>
+          {authError && <p className="form-error" role="alert">{authError}</p>}{authMessage && <p className="form-success" role="status">{authMessage}</p>}
+          <button className="button button-primary submit-button" disabled={authBusy || signupOtp.length !== 6}>{authBusy ? "Doğrulanıyor…" : "E-postayı doğrula"}</button>
+          <button type="button" className="otp-resend" disabled={authBusy} onClick={() => void handleResendSignupOtp()}>Kodu tekrar gönder</button>
+          <button type="button" className="otp-resend" disabled={authBusy} onClick={() => { setPendingEmail(""); setSignupOtp(""); setAuthError(""); setAuthMessage(""); }}>E-posta adresini değiştir</button>
+        </form> : <form onSubmit={event => void handleAuth(event)} className="modal-form">
           <label>Kullanıcı adı<input required minLength={3} maxLength={24} autoComplete="username" value={username} onChange={event => setUsername(event.target.value)} placeholder="ornek_kullanici" /></label>
           {authMode === "register" && <label>E-posta<input required type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="ornek@eposta.com" /></label>}
           <label>Şifre<input required type="password" minLength={8} autoComplete={authMode === "login" ? "current-password" : "new-password"} value={password} onChange={event => setPassword(event.target.value)} placeholder="En az 8 karakter" /></label>
           {authError && <p className="form-error" role="alert">{authError}</p>}{authMessage && <p className="form-success" role="status">{authMessage}</p>}
           <button className="button button-primary submit-button" disabled={authBusy}>{authBusy ? "İşleniyor…" : authMode === "login" ? "Giriş yap" : "Hesap oluştur"}</button>
-        </form><p className="privacy-note">Hesabın Supabase güvenli kimlik doğrulamasıyla korunur.</p>
+        </form>}<p className="privacy-note">Hesabın Supabase güvenli kimlik doğrulamasıyla korunur.</p>
       </section></div>}
 
       {uploadOpen && <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setUploadOpen(false); }}><section className="modal glass modal-upload" role="dialog" aria-modal="true" aria-labelledby="upload-title">
