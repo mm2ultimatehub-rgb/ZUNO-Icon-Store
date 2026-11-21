@@ -3,7 +3,7 @@ export type IconCategory="Minimal"|"Dark"|"Colorful"|"Gradient"|"Other";
 export type StoreIcon={id:string;user_id:string;title:string;description:string;category:string;storage_path:string;mime_type:string;file_size:number;downloads:number;created_at:string;profiles?:{username:string}|null};
 const BUCKET="zuno-icons"; const MAX_FILE_SIZE=5*1024*1024; const ALLOWED_TYPES=["image/png","image/webp","image/svg+xml"];
 export async function listIcons(options?:{category?:string;search?:string}){
- const client=requireSupabase(); let query=client.from("zuno_icons").select("id,user_id,title,description,category,storage_path,mime_type,file_size,downloads,created_at,profiles!zuno_icons_user_id_fkey(username)").order("created_at",{ascending:false});
+ const client=requireSupabase(); let query=client.from("zuno_icons").select("id,user_id,title,description,category,storage_path,mime_type,file_size,downloads,created_at,profiles!zuno_icons_user_profile_fkey(username)").order("created_at",{ascending:false});
  if(options?.category && options.category!=="All") query=query.eq("category",options.category);
  if(options?.search?.trim()) query=query.ilike("title",`%${options.search.trim().replace(/[%_]/g,"")}%`);
  const {data,error}=await query; if(error) throw error; return (data??[]) as unknown as StoreIcon[];
