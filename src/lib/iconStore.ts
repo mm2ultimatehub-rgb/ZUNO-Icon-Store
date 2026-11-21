@@ -1,24 +1,24 @@
 import { requireSupabase } from "./supabase";
 export type IconCategory="Minimal"|"Dark"|"Colorful"|"Gradient"|"Other";
-export type StoreIcon={id:string;user_id:string;title:string;description:string;category:string;storage_path:string;mime_type:string;file_size:number;downloads:number;created_at:string;profiles?:{username:string}|null};
-const BUCKET="zuno-icons"; const MAX_FILE_SIZE=5*1024*1024; const ALLOWED_TYPES=["image/png","image/webp","image/svg+xml"];
-export async function listIcons(options?:{category?:string;search?:string}){
- const client=requireSupabase(); let query=client.from("zuno_icons").select("id,user_id,title,description,category,storage_path,mime_type,file_size,downloads,created_at,profiles!zuno_icons_user_profile_fkey(username)").order("created_at",{ascending:false});
+export type StoreIcon={id:string;title:string;description:string;category:string;username:string|null;asset_url:string;like_count:number;created_at:string};
+const MAX_FILE_SIZE=5*1024*1024; const ALLOWED_TYPES=["image/png","image/webp","image/svg+xml"];
+export async function listIcons(options?:{category?:string;search?:string}):Promise<StoreIcon[]>{
+ const client=requireSupabase();
+ let query=client.from("zuno_icon_catalog").select("id,title,description,category,username,asset_url,like_count,created_at").order("created_at",{ascending:false}).abortSignal(AbortSignal.timeout(12000));
  if(options?.category && options.category!=="All") query=query.eq("category",options.category);
  if(options?.search?.trim()) query=query.ilike("title",`%${options.search.trim().replace(/[%_]/g,"")}%`);
- const {data,error}=await query; if(error) throw error; return (data??[]) as unknown as StoreIcon[];
+ const {data,error}=await query; if(error) throw error; return (data??[]) as StoreIcon[];
 }
-export function getIconPublicUrl(path:string){return requireSupabase().storage.from(BUCKET).getPublicUrl(path).data.publicUrl;}
 export async function uploadIcon(input:{file:File;title:string;description?:string;category?:IconCategory}){
  const client=requireSupabase(); const {data:auth}=await client.auth.getUser(); if(!auth.user) throw new Error("İkon yüklemek için giriş yapmalısın.");
  if(!ALLOWED_TYPES.includes(input.file.type)) throw new Error("Yalnızca PNG, WebP veya SVG yükleyebilirsin.");
  if(input.file.size>MAX_FILE_SIZE) throw new Error("Dosya boyutu en fazla 5 MB olabilir.");
  const title=input.title.trim(); if(title.length<2||title.length>60) throw new Error("İkon adı 2–60 karakter olmalı.");
  const ext=input.file.type==="image/svg+xml"?"svg":input.file.type==="image/webp"?"webp":"png"; const path=`${auth.user.id}/${crypto.randomUUID()}.${ext}`;
- const {error:uploadError}=await client.storage.from(BUCKET).upload(path,input.file,{contentType:input.file.type,cacheControl:"31536000",upsert:false});
+ const {error:uploadError}=await client.storage.from("zuno-icons").upload(path,input.file,{contentType:input.file.type,cacheControl:"31536000",upsert:false});
  if(uploadError) throw uploadError;
  const {data,error}=await client.from("zuno_icons").insert({user_id:auth.user.id,title,description:input.description?.trim()??"",category:input.category??"Other",storage_path:path,mime_type:input.file.type,file_size:input.file.size}).select().single();
- if(error){await client.storage.from(BUCKET).remove([path]);throw error;} return data as StoreIcon;
+ if(error){await client.storage.from("zuno-icons").remove([path]);throw error;} return data;
 }
 export async function toggleIconLike(iconId:string){
  const client=requireSupabase(); const {data:auth}=await client.auth.getUser(); if(!auth.user) throw new Error("Beğenmek için giriş yapmalısın.");
