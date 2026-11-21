@@ -44,3 +44,14 @@ export async function signInWithUsername(username:string,password:string){
  const {error:sessionError}=await client.auth.setSession({access_token:data.session.access_token,refresh_token:data.session.refresh_token});if(sessionError)throw sessionError;return data.user;
 }
 export async function signOut(){const {error}=await requireSupabase().auth.signOut();if(error)throw error;}
+
+export async function verifySignupOtp(email:string,token:string){
+ const client=requireSupabase();
+ const {data,error}=await client.auth.verifyOtp({email:email.trim(),token:token.trim(),type:"signup"});
+ if(error) throw error; return data;
+}
+export async function resendSignupOtp(email:string){
+ const client=requireSupabase();
+ const {error}=await client.auth.resend({type:"signup",email:email.trim()});
+ if(error) throw error;
+}
