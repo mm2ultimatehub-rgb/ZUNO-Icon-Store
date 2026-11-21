@@ -24,3 +24,5 @@ npm run dev
 ```
 
 The initial UI is intentionally a functional placeholder. Replace its visual layer without removing the functions in `src/lib/iconStore.ts`.
+
+For the ZUNO Android app's read-only community catalog contract, see [`docs/android-integration.md`](docs/android-integration.md). The app can fetch community icons while preserving its eight built-in icons and offline behavior.
