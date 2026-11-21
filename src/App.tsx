@@ -160,7 +160,7 @@ export default function App() {
       <section className="gallery-section" id="icon-gallery">
         <div className="section-heading"><div><div className="eyebrow">KOLEKSİYONU İNCELE</div><h2>Topluluk ikonları<span>.</span></h2><p>Tarzını bul, favorilerini seç.</p></div><div className="gallery-count"><strong>{icons.length.toString().padStart(2, "0")}</strong><span>GÖRÜNEN TASARIM</span></div></div>
         <div className="toolbar glass">
-          <label className="search-box"><IconMark name="search" /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="İkonlarda ara..." aria-label="İkonlarda ara" /><kbd>/</kbd></label>
+          <label className="search-box"><IconMark name="search" /><input id="icon-search" value={search} onChange={event => setSearch(event.target.value)} placeholder="İkonlarda ara..." aria-label="İkonlarda ara" /><kbd>/</kbd></label>
           <div className="category-list" aria-label="Kategori filtreleri">{categories.map(item => <button key={item} className={category === item ? "category active" : "category"} onClick={() => setCategory(item)}>{item === "All" ? "Tümü" : item}</button>)}</div>
         </div>
         {loading ? <div className="loading-state"><span className="spinner" /><p>Koleksiyon hazırlanıyor…</p></div> :
