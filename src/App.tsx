@@ -62,6 +62,18 @@ export default function App() {
   useEffect(() => { void refreshIcons(); }, [refreshIcons]);
 
   useEffect(() => {
+    const onShortcut = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.isContentEditable) return;
+      event.preventDefault();
+      document.getElementById("icon-search")?.focus();
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, []);
+
+  useEffect(() => {
     if (!supabase) return;
     void supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null));
