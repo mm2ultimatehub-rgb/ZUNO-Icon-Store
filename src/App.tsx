@@ -1,4 +1,5 @@
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import {
   listIcons, signInWithUsername, signOut, signUpWithUsername, toggleIconLike,
   uploadIcon, type IconCategory, type StoreIcon,
