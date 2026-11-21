@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-export default defineConfig(({ mode }) => ({
+
+export default defineConfig({
   plugins: [react()],
-  base: mode === "production" ? "/ZUNO-Icon-Store/" : "/",
-}));
+  // Relative paths work on the GitHub Pages project subpath and local previews.
+  base: "./",
+});
