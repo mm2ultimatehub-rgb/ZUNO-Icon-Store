@@ -22,6 +22,19 @@ function IconMark({ name }: { name: string }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name] ?? paths.grid} /></svg>;
 }
 
+function AnimatedOtpInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  return <div className="zuno-otp" onClick={() => document.getElementById("zuno-otp-input")?.focus()}>
+    <div className="zuno-otp-cells" aria-hidden="true">
+      {Array.from({ length: 6 }, (_, index) => <div className={value[index] ? "zuno-otp-cell filled" : "zuno-otp-cell"} key={index}>
+        <span className="otp-liquid" />
+        <strong>{value[index] ?? ""}</strong>
+        {!value[index] && <i />}
+      </div>)}
+    </div>
+    <input id="zuno-otp-input" className="zuno-otp-real-input" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={value} onChange={event => onChange(event.target.value.replace(/\\D/g, "").slice(0, 6))} aria-label="6 haneli doğrulama kodu" />
+  </div>;
+}
+
 export default function App() {
   const [icons, setIcons] = useState<StoreIcon[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +52,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
   const [signupOtp, setSignupOtp] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadBusy, setUploadBusy] = useState(false);
   const [uploadError, setUploadError] = useState("");
@@ -137,7 +151,7 @@ export default function App() {
 
   async function handleResendSignupOtp() {
     setAuthBusy(true); setAuthError(""); setAuthMessage("");
-    try { await resendSignupOtp(pendingEmail); setAuthMessage("Yeni doğrulama kodu e-posta adresine gönderildi."); }
+    try { await resendSignupOtp(pendingEmail); setResendCooldown(30); setAuthMessage("Kod gönderme isteği Supabase’e iletildi. Gelen kutunu ve spam klasörünü kontrol et."); }
     catch (error) { setAuthError(error instanceof Error ? error.message : "Kod gönderilemedi. Biraz sonra tekrar dene."); }
     finally { setAuthBusy(false); }
   }
@@ -227,7 +241,7 @@ export default function App() {
           <label>6 haneli doğrulama kodu<input required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={signupOtp} onChange={event => setSignupOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="000000" /></label>
           {authError && <p className="form-error" role="alert">{authError}</p>}{authMessage && <p className="form-success" role="status">{authMessage}</p>}
           <button className="button button-primary submit-button" disabled={authBusy || signupOtp.length !== 6}>{authBusy ? "Doğrulanıyor…" : "E-postayı doğrula"}</button>
-          <button type="button" className="otp-resend" disabled={authBusy} onClick={() => void handleResendSignupOtp()}>Kodu tekrar gönder</button>
+          <button type="button" className="otp-resend" disabled={authBusy || resendCooldown > 0} onClick={() => void handleResendSignupOtp()}>{resendCooldown > 0 ? `Tekrar gönder · ${resendCooldown} sn` : "Kodu tekrar gönder"}</button>
           <button type="button" className="otp-resend" disabled={authBusy} onClick={() => { setPendingEmail(""); setSignupOtp(""); setAuthError(""); setAuthMessage(""); }}>E-posta adresini değiştir</button>
         </form> : <form onSubmit={event => void handleAuth(event)} className="modal-form">
           <label>Kullanıcı adı<input required minLength={3} maxLength={24} autoComplete="username" value={username} onChange={event => setUsername(event.target.value)} placeholder="ornek_kullanici" /></label>
