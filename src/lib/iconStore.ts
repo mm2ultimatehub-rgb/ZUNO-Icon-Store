@@ -20,6 +20,11 @@ export async function uploadIcon(input:{file:File;title:string;description?:stri
  const {data,error}=await client.from("zuno_icons").insert({user_id:auth.user.id,title,description:input.description?.trim()??"",category:input.category??"Other",storage_path:path,mime_type:input.file.type,file_size:input.file.size}).select().single();
  if(error){await client.storage.from("zuno-icons").remove([path]);throw error;} return data;
 }
+export async function listLikedIconIds():Promise<string[]>{
+ const client=requireSupabase(); const {data:auth}=await client.auth.getUser(); if(!auth.user) return [];
+ const {data,error}=await client.from("zuno_icon_likes").select("icon_id").eq("user_id",auth.user.id);
+ if(error) throw error; return (data??[]).map(row=>row.icon_id as string);
+}
 export async function toggleIconLike(iconId:string){
  const client=requireSupabase(); const {data:auth}=await client.auth.getUser(); if(!auth.user) throw new Error("Beğenmek için giriş yapmalısın.");
  const {data:existing,error:readError}=await client.from("zuno_icon_likes").select("icon_id").eq("icon_id",iconId).eq("user_id",auth.user.id).maybeSingle();
