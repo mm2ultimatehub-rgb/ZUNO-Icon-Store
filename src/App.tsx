@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  listIcons, signInWithUsername, signOut, signUpWithUsername, toggleIconLike,
+  listIcons, listLikedIconIds, signInWithUsername, signOut, signUpWithUsername, toggleIconLike,
   uploadIcon, type IconCategory, type StoreIcon,
 } from "./lib/iconStore";
 import { supabase, supabaseReady } from "./lib/supabase";
@@ -79,6 +79,15 @@ export default function App() {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null));
     return () => data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    if (!user?.id) { setLiked([]); return; }
+    void listLikedIconIds().then(ids => { if (active) setLiked(ids); }).catch(error => {
+      if (active) setLoadError(error instanceof Error ? error.message : "Beğeniler yüklenemedi.");
+    });
+    return () => { active = false; };
+  }, [user?.id]);
 
   const displayName = useMemo(() => {
     return user?.user_metadata?.username || user?.email?.split("@")[0] || "ZUNO member";
@@ -177,7 +186,7 @@ export default function App() {
         </div>
         {loading ? <div className="loading-state"><span className="spinner" /><p>Koleksiyon hazırlanıyor…</p></div> :
           icons.length ? <div className="icon-grid">{icons.map(icon => <article className="icon-card glass" key={icon.id}>
-            <div className="icon-preview"><img src={icon.asset_url} alt={icon.title} loading="lazy" /><button className={liked.includes(icon.id) ? "like-button liked" : "like-button"} aria-label="Beğen" onClick={() => void handleLike(icon.id)}><IconMark name="heart" /></button></div>
+            <div className="icon-preview"><img src={icon.asset_url} alt={icon.title} loading="lazy" /><button className={liked.includes(icon.id) ? "like-button liked" : "like-button"} aria-label={liked.includes(icon.id) ? "Beğeniyi kaldır" : "İkonu beğen"} aria-pressed={liked.includes(icon.id)} onClick={() => void handleLike(icon.id)}><IconMark name="heart" /></button></div>
             <div className="icon-info"><div><h3>{icon.title}</h3><p>{icon.category} · @{icon.username || "creator"}</p></div><span className="like-count"><IconMark name="heart" /> {icon.like_count ?? 0}</span></div>
           </article>)}</div> :
           <div className="empty-state glass"><div className="empty-mark"><IconMark name="grid" /></div><h3>{search || category !== "All" ? "Bu filtrede sonuç yok." : "İlk tasarımını bekliyoruz."}</h3><p>{search || category !== "All" ? "Arama kelimesini veya kategoriyi değiştirmeyi dene." : "Topluluğun ilk ikonunu sen paylaş."}</p>{!search && category === "All" && <button className="button button-primary" onClick={() => user ? setUploadOpen(true) : setAuthOpen(true)}>İlk ikonu yükle</button>}</div>}
