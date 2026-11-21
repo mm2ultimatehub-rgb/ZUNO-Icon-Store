@@ -224,7 +224,7 @@ export default function App() {
         <div className="auth-tabs"><button className={authMode === "login" ? "selected" : ""} onClick={() => { setAuthMode("login"); setAuthError(""); setAuthMessage(""); }}>Giriş yap</button><button className={authMode === "register" ? "selected" : ""} onClick={() => { setAuthMode("register"); setAuthError(""); setAuthMessage(""); }}>Kayıt ol</button></div>
         {pendingEmail ? <form onSubmit={event => void handleVerifySignupOtp(event)} className="modal-form">
           <p className="otp-instructions"><strong>{pendingEmail}</strong> adresine gönderilen doğrulama kodunu gir. Gelen kutunu ve spam klasörünü kontrol et.</p>
-          <label>6 haneli doğrulama kodu<input required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={signupOtp} onChange={event => setSignupOtp(event.target.value.replace(/\\D/g, "").slice(0, 6))} placeholder="000000" /></label>
+          <label>6 haneli doğrulama kodu<input required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={signupOtp} onChange={event => setSignupOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="000000" /></label>
           {authError && <p className="form-error" role="alert">{authError}</p>}{authMessage && <p className="form-success" role="status">{authMessage}</p>}
           <button className="button button-primary submit-button" disabled={authBusy || signupOtp.length !== 6}>{authBusy ? "Doğrulanıyor…" : "E-postayı doğrula"}</button>
           <button type="button" className="otp-resend" disabled={authBusy} onClick={() => void handleResendSignupOtp()}>Kodu tekrar gönder</button>
