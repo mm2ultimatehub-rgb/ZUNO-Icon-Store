@@ -31,7 +31,7 @@ function AnimatedOtpInput({ value, onChange }: { value: string; onChange: (value
         {!value[index] && <i />}
       </div>)}
     </div>
-    <input id="zuno-otp-input" className="zuno-otp-real-input" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={value} onChange={event => onChange(event.target.value.replace(/\\D/g, "").slice(0, 6))} aria-label="6 haneli doğrulama kodu" />
+    <input id="zuno-otp-input" className="zuno-otp-real-input" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={value} onChange={event => onChange(event.target.value.replace(/\D/g, "").slice(0, 6))} aria-label="6 haneli doğrulama kodu" />
   </div>;
 }
 
@@ -76,6 +76,12 @@ export default function App() {
   }, [category, search]);
 
   useEffect(() => { void refreshIcons(); }, [refreshIcons]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setTimeout(() => setResendCooldown(value => Math.max(0, value - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [resendCooldown]);
 
   useEffect(() => {
     const onShortcut = (event: KeyboardEvent) => {
