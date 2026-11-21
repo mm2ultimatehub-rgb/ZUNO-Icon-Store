@@ -207,7 +207,7 @@ export default function App() {
           <label className="search-box"><IconMark name="search" /><input id="icon-search" value={search} onChange={event => setSearch(event.target.value)} placeholder="İkonlarda ara..." aria-label="İkonlarda ara" /><kbd>/</kbd></label>
           <div className="category-list" aria-label="Kategori filtreleri">{categories.map(item => <button key={item} className={category === item ? "category active" : "category"} onClick={() => setCategory(item)}>{item === "All" ? "Tümü" : item}</button>)}</div>
         </div>
-        {loading ? <div className="loading-state"><span className="spinner" /><p>Koleksiyon hazırlanıyor…</p></div> :
+        {loading ? <div className="loading-state" role="status" aria-live="polite"><div className="loader-glass" aria-hidden="true"><span className="loader-shape" /><span className="loader-orbit" /></div><p>İkonlar yükleniyor</p><span className="loading-caption">Koleksiyon hazırlanıyor…</span></div> :
           icons.length ? <div className="icon-grid">{icons.map(icon => <article className="icon-card glass" key={icon.id}>
             <div className="icon-preview"><img src={icon.asset_url} alt={icon.title} loading="lazy" /><button className={liked.includes(icon.id) ? "like-button liked" : "like-button"} aria-label={liked.includes(icon.id) ? "Beğeniyi kaldır" : "İkonu beğen"} aria-pressed={liked.includes(icon.id)} onClick={() => void handleLike(icon.id)}><IconMark name="heart" /></button></div>
             <div className="icon-info"><div><h3>{icon.title}</h3><p>{icon.category} · @{icon.username || "creator"}</p></div><span className="like-count"><IconMark name="heart" /> {icon.like_count ?? 0}</span></div>
