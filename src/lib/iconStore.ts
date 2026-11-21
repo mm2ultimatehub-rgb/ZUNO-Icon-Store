@@ -4,10 +4,19 @@ export type StoreIcon={id:string;title:string;description:string;category:string
 const MAX_FILE_SIZE=5*1024*1024; const ALLOWED_TYPES=["image/png","image/webp","image/svg+xml"];
 export async function listIcons(options?:{category?:string;search?:string}):Promise<StoreIcon[]>{
  const client=requireSupabase();
- let query=client.from("zuno_icon_catalog").select("id,title,description,category,username,asset_url,like_count,created_at").order("created_at",{ascending:false}).abortSignal(AbortSignal.timeout(12000));
- if(options?.category && options.category!=="All") query=query.eq("category",options.category);
- if(options?.search?.trim()) query=query.ilike("title",`%${options.search.trim().replace(/[%_]/g,"")}%`);
- const {data,error}=await query; if(error) throw error; return (data??[]) as StoreIcon[];
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),10000);
+ try{
+  let query=client.from("zuno_icon_catalog").select("id,title,description,category,username,asset_url,like_count,created_at").order("created_at",{ascending:false}).abortSignal(controller.signal);
+  if(options?.category && options.category!=="All") query=query.eq("category",options.category);
+  if(options?.search?.trim()) query=query.ilike("title",`%${options.search.trim().replace(/[%_]/g,"")}%`);
+  const {data,error}=await query;
+  if(error){if(controller.signal.aborted)throw new Error("Supabase bağlantısı zaman aşımına uğradı. İnternet bağlantını kontrol edip yeniden dene.");throw error;}
+  return (data??[]) as StoreIcon[];
+ }catch(error){
+  if(controller.signal.aborted)throw new Error("İkonlar 10 saniye içinde yüklenemedi. Supabase bağlantısını kontrol edip yeniden dene.");
+  throw error;
+ }finally{clearTimeout(timeout);}
 }
 export async function uploadIcon(input:{file:File;title:string;description?:string;category?:IconCategory}){
  const client=requireSupabase(); const {data:auth}=await client.auth.getUser(); if(!auth.user) throw new Error("İkon yüklemek için giriş yapmalısın.");
