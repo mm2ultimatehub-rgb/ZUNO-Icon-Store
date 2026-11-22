@@ -3,6 +3,7 @@ import { useAuth } from "../lib/auth";
 import { deleteIcon, fetchCatalog, fetchZunoStorageUsage, formatSize, toMessage, type CatalogIcon } from "../lib/storeApi";
 import { EmptyState, ErrorState } from "../components/ui";
 import SoftLoader from "../components/SoftLoader";
+import StorageGauge from "../components/StorageGauge";
 import { useToast } from "../lib/toast";
 
 const STORAGE_CAP = 1024 * 1024 * 1024;
@@ -51,18 +52,12 @@ export default function Admin() {
     }
   }
 
-  const percent = Math.min(100, used / STORAGE_CAP * 100);
   if (loading) return <SoftLoader title="Yönetim paneli hazırlanıyor" subtitle="Paylaşımlar ve depolama kontrol ediliyor" />;
   if (error) return <ErrorState message={error} onRetry={() => setRefresh((n) => n + 1)} />;
 
   return <section className="admin-page">
     <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Yenile</button></div>
-    <section className="admin-panel glass admin-storage">
-      <div><p className="eyebrow">DOSYA DEPOLAMA</p><h2>1 GB alan kullanımı</h2></div>
-      <div className="admin-storage__numbers"><strong>{formatSize(used)} <span className="muted">/ 1 GB</span></strong><strong>{percent.toFixed(2)}%</strong></div>
-      <div className="admin-storage__track" role="progressbar" aria-label="Depolama kullanımı" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number(percent.toFixed(2))}><div className="admin-storage__fill" style={{ width: `${percent}%` }} /></div>
-      <p className="admin-note">Yalnızca ZUNO'nun Supabase dosya alanındaki gerçek dosyalar sayılır. Pinterest bağlantıları dosya olarak saklanmadığı için bu hesaba dahil değildir. Dosya yüklemeleri toplam 1 GB sınırını aşamaz.</p>
-    </section>
+    <StorageGauge usedBytes={used} quotaBytes={STORAGE_CAP} />
     <div className="admin-heading"><div><h2>Topluluk paylaşımları</h2><p className="muted">{icons.length} paylaşım listeleniyor</p></div></div>
     {icons.length === 0 ? <EmptyState title="Henüz paylaşım yok" text="Kullanıcıların yüklediği görseller burada görünür." /> :
       <div className="admin-grid">{icons.map((icon) => <article className="admin-item" key={icon.id}>
