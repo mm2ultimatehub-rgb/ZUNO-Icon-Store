@@ -86,13 +86,17 @@ export async function signInWithUsername(username: string, password: string) {
   const { data, error } = await client.functions.invoke("username-login", { body: { username: username.trim().toLowerCase(), password } });
   if (error) {
     const context = (error as { context?: unknown }).context;
-    if (context instanceof Response) {
-      const payload = await context.clone().json().catch(() => null) as { error?: string } | null;
+    if (context && typeof context === "object" && "json" in context && typeof context.json === "function") {
+      const payload = await (context as Response).clone().json().catch(() => null) as { error?: string } | null;
       if (payload?.error) throw new Error(payload.error);
     }
     throw error;
   }
-  if (!data?.session?.access_token || !data?.session?.refresh_token) throw new Error(data?.error ?? "Giriş yapılamadı.");
+  if (data?.error) {
+    if (data.code === "email_not_confirmed") throw new Error("Bu hesabın e-posta adresi henüz doğrulanmamış.");
+    throw new Error(data.error);
+  }
+  if (!data?.session?.access_token || !data?.session?.refresh_token) throw new Error("Giriş yapılamadı.");
   const { error: sessionError } = await client.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token });
   if (sessionError) throw sessionError;
   return data.user;
