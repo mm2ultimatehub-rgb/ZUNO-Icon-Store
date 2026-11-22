@@ -34,7 +34,7 @@ export default function Upload() {
     setError("");
     if (!candidate) return;
     if (!ACCEPT.split(",").includes(candidate.type)) { setError("Yalnızca PNG, WebP veya SVG yükleyebilirsin."); return; }
-    if (candidate.size > 5 * 1024 * 1024) { setError("Dosya boyutu en fazla 5 MB olabilir."); return; }
+    if (candidate.size > 10 * 1024 * 1024) { setError("Dosya boyutu en fazla 10 MB olabilir."); return; }
     setFile(candidate);
     if (!title) setTitle(candidate.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").slice(0, 60));
   }
@@ -51,7 +51,7 @@ export default function Upload() {
   }
 
   return <>
-    <section className="authbox authbox--wide glass"><h1>İkon yükle</h1><p className="muted">PNG, WebP veya SVG · en fazla 5 MB</p>
+    <section className="authbox authbox--wide glass"><h1>İkon yükle</h1><p className="muted">PNG, WebP veya SVG · en fazla 10 MB</p>
       <form className="form" onSubmit={onSubmit} noValidate>
         <div className={`drop ${drag ? "drop--over" : ""} ${preview ? "drop--has" : ""}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={onDrop}>
           <button type="button" className="drop__btn" onClick={() => input.current?.click()}>{preview ? <img src={preview} alt="Seçilen ikon önizlemesi" /> : <span>Dosyayı buraya sürükle ya da <u>seç</u></span>}</button>
