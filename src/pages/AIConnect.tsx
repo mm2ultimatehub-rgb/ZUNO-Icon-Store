@@ -94,6 +94,19 @@ export default function AIConnect() {
    <h2>Bağlı AI uygulamaları</h2>
    {tokens.length===0?<p className="muted small">Henüz bağlantı anahtarı oluşturmadın.</p>:<div className="aiconnect__list">{tokens.map(t=><div className="aiconnect__item" key={t.id}><div><strong>{t.name}</strong><small>Oluşturuldu: {date(t.created_at)} · Son kullanım: {date(t.last_used_at)}</small></div><button className="btn btn--danger btn--sm" disabled={busy} onClick={()=>void revoke(t.id)}>İptal et</button></div>)}</div>}
    <div className="aiconnect__guide"><strong>Bağlantı ayarları</strong><p>AI uygulaman MCP destekliyorsa uzak sunucu olarak yukarıdaki adresi ekle. Kimlik doğrulamada Bearer token seçip oluşturduğun ZUNO anahtarını kullan. İstemcinin Streamable HTTP desteği olmalı.</p></div>
+   <div className="aiconnect__guide"><strong>AI araç kataloğu · 9 araç</strong><p>Bağlanan AI, aşağıdaki araçları kullanarak mağazada arama, inceleme, yayınlama ve kendi ikonlarını yönetme işlemlerini yapabilir.</p>
+    <div className="aiconnect__list">
+     <div className="aiconnect__item"><div><strong>search_icons</strong><small>Başlık, kategori, yenilik ve popülerliğe göre herkese açık ikonları arar. Sayfalama destekler.</small></div></div>
+     <div className="aiconnect__item"><div><strong>list_icon_categories</strong><small>Mağazada kullanılan kategorileri listeler.</small></div></div>
+     <div className="aiconnect__item"><div><strong>get_icon_details</strong><small>Bir ikonun kimlik numarasıyla açıklama, kategori, görsel ve beğeni bilgilerini getirir.</small></div></div>
+     <div className="aiconnect__item"><div><strong>list_my_icons</strong><small>Yalnızca sana ait yayınlanmış ikonları ve görsel bağlantılarını listeler.</small></div></div>
+     <div className="aiconnect__item"><div><strong>update_my_icon</strong><small>Sana ait ikonun başlığını, açıklamasını veya kategorisini günceller.</small></div></div>
+     <div className="aiconnect__item"><div><strong>publish_icon</strong><small>Senin verdiğin veya açıkça oluşturulmasını istediğin PNG, JPEG ya da WebP görselini doğrudan yayınlar.</small></div></div>
+     <div className="aiconnect__item"><div><strong>create_icon_draft</strong><small>Görseli özel taslak olarak kaydeder; herkese açık yayın yapmaz.</small></div></div>
+     <div className="aiconnect__item"><div><strong>list_my_drafts</strong><small>Özel ikon taslaklarını listeler.</small></div></div>
+     <div className="aiconnect__item"><div><strong>delete_my_icon</strong><small>Sana ait ikonu ve dosyasını kalıcı siler. AI bunu yalnızca açık silme isteğin ve onayın varsa kullanmalıdır.</small></div></div>
+    </div>
+   </div>
   </section>
   <section className="authbox authbox--wide glass">
    <h2>AI tarafından oluşturulan taslaklar</h2><p className="muted small">Taslak modunu kullanan AI uygulamalarının gönderdiği ikonlar yalnızca sana görünür. Doğrudan yayınlama için AI uygulaması publish_icon aracını kullanmalıdır.</p>
