@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<defs>
+ <linearGradient id="zuno-ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".32" stop-color="#dcecff"/><stop offset=".68" stop-color="#829bb8"/><stop offset="1" stop-color="#f7fbff"/></linearGradient>
+ <linearGradient id="zuno-wave" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#b8cce2"/><stop offset="1" stop-color="#738aa7"/></linearGradient>
+</defs>
+<circle cx="50" cy="50" r="43" fill="none" stroke="url(#zuno-ice)" stroke-width="6.5"/>
+<circle cx="50" cy="50" r="38.5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.2"/>
+<path d="M8 52 C20 73 25 28 36 51 S50 78 59 49 S74 26 83 50 S94 67 96 48" fill="none" stroke="url(#zuno-wave)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 48 C20 69 25 24 36 47 S50 74 59 45 S74 22 83 46 S94 63 96 44" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
