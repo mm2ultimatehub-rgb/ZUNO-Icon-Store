@@ -71,4 +71,4 @@ Available tools:
 
 Publishing is deliberately not exposed as an MCP tool. The user must sign in to ZUNO and explicitly approve publication in AI Connect. The `zuno-mcp-api` Edge Function performs server-side storage/catalog operations; the Cloudflare Worker holds only the public Supabase publishable key and Edge Function URL.
 
-The deployed Supabase migration is also committed at `supabase/migrations/20261123090000_zuno_mcp_tokens_and_ai_icon_drafts.sql`.
+The deployed Supabase migration is also committed at `supabase/migrations/20261122192500_zuno_mcp_tokens_and_ai_icon_drafts.sql`.
