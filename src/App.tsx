@@ -10,6 +10,7 @@ import IconDetail from "./pages/IconDetail";
 import Profile from "./pages/Profile";
 import Upload from "./pages/Upload";
 import Admin from "./pages/Admin";
+import AIConnect from "./pages/AIConnect";
 
 function Router() {
   const [first = "", second = ""] = useRoute();
@@ -36,7 +37,7 @@ function Router() {
   } else if (first === "upload") {
     name = "upload";
     view = <Upload />;
-  } else if (first === "admin") {
+  } else if (first === "ai-connect") {\n    name = "ai-connect";\n    view = <AIConnect />;\n  } else if (first === "admin") {
     name = "admin";
     view = <Admin />;
   } else if (first === "profile") {
