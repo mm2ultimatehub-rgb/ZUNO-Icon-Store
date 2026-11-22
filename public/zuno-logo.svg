@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ZUNO">
+  <defs>
+    <linearGradient id="ring" x1="80" y1="70" x2="430" y2="445" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f5f9ff"/>
+      <stop offset=".48" stop-color="#9eb3cc"/>
+      <stop offset="1" stop-color="#dce8f5"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="174" x2="0" y2="302" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f4f8ff"/>
+      <stop offset="1" stop-color="#a9bdd5"/>
+    </linearGradient>
+  </defs>
+  <path d="M256 42 A214 214 0 1 1 255.9 42" fill="#0b1424"/>
+  <path d="M256 58 A198 198 0 1 1 255.9 58" fill="none" stroke="#526982" stroke-opacity=".9" stroke-width="15"/>
+  <path d="M256 76 A180 180 0 1 1 255.9 76" fill="none" stroke="url(#ring)" stroke-width="7"/>
+  <path d="M92 256 C130 256 139 211 174 211 C210 211 213 302 251 302 C289 302 291 174 329 174 C367 174 369 302 407 302 C443 302 449 256 420 256" fill="none" stroke="#40556e" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M92 256 C130 256 139 211 174 211 C210 211 213 302 251 302 C289 302 291 174 329 174 C367 174 369 302 407 302 C443 302 449 256 420 256" fill="none" stroke="url(#wave)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M256 76 A180 180 0 0 1 426 198" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width="4" stroke-linecap="round"/>
+</svg>
