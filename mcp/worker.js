@@ -106,7 +106,7 @@ export default {
         protocolVersion: message.params?.protocolVersion || "2025-06-18",
         capabilities: { tools: { listChanged: false } },
         serverInfo: SERVER_INFO,
-        instructions: "ZUNO Icon Store lets the connected user search public icons, publish user-provided or user-requested AI-generated images directly with publish_icon, or save private drafts with create_icon_draft. Use publish_icon when the user asks you to send/publish an image. Only claim publication after the tool returns published icon details."
+        instructions: "You are connected to the user's ZUNO Icon Store. Workflow: (1) use search_icons to find existing icons before creating duplicates; filter by category and sort by newest/popular as useful; use list_icon_categories for valid categories; (2) use get_icon_details for a selected public icon; (3) use list_my_icons to inspect only the connected user's own uploads; (4) use update_my_icon only for metadata changes the user requested; (5) use publish_icon to publish an image the user supplied or explicitly asked you to create, and report success only when published icon details are returned; (6) use create_icon_draft only when the user asks for a private draft or approval workflow; (7) use list_my_drafts to inspect drafts. delete_my_icon is permanent: never call unless the user explicitly identifies the icon and confirms deletion. Never access or modify another user's private icons. Prefer concise structured results and return IDs for follow-up actions."
       });
     }
     if (message.method === "ping") return reply(message.id, {});
