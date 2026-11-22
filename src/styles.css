@@ -788,3 +788,52 @@ body { background:#071214; }
 .zuno-storage-gauge__bottom strong{font:700 20px var(--display);color:var(--ink)}
 @media(max-width:600px){.zuno-storage-gauge{padding:17px}.zuno-storage-gauge__visual{width:min(100%,330px)}}
 @media(prefers-reduced-motion:reduce){.zuno-storage-gauge *{scroll-behavior:auto}}
+
+
+/* Mobile performance pass: preserve liquid glass while reducing GPU-heavy effects. */
+@media (max-width: 760px) {
+  .orb {
+    filter: blur(42px);
+    opacity: .32;
+    animation: none !important;
+    will-change: auto;
+  }
+  .glass,
+  .btn--ghost {
+    -webkit-backdrop-filter: blur(11px) saturate(135%);
+    backdrop-filter: blur(11px) saturate(135%);
+  }
+  .route-view {
+    animation: zuno-mobile-route-in .22s ease-out both;
+  }
+  @keyframes zuno-mobile-route-in {
+    from { opacity: 0; transform: translate3d(0, 7px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .card {
+    animation: zuno-mobile-card-in .2s ease-out both;
+  }
+  @keyframes zuno-mobile-card-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .btn--primary,
+  .chip--on,
+  .topnav a.is-active,
+  .tabbar a.is-active {
+    animation: none !important;
+  }
+  .card__thumb img,
+  .detail__preview img,
+  .drop__btn img {
+    transition-duration: .22s;
+  }
+}
+@media (max-width: 420px) {
+  .glass,
+  .btn--ghost {
+    -webkit-backdrop-filter: blur(8px) saturate(125%);
+    backdrop-filter: blur(8px) saturate(125%);
+  }
+  .orb { filter: blur(32px); opacity: .26; }
+}
