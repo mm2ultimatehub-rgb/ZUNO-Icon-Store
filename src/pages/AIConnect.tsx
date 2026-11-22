@@ -83,8 +83,7 @@ export default function AIConnect() {
  if(loading)return <SoftLoader title="AI Connect hazırlanıyor" subtitle="Bağlantılar ve taslaklar yükleniyor"/>;
  return <div className="aiconnect">
   <section className="authbox authbox--wide glass">
-   <div className="aiconnect__eyebrow">ZUNO · MODEL CONTEXT PROTOCOL</div>
-   <h1>AI Connect</h1>
+   <div className="aiconnect__brand"><img src="./zuno-logo.svg" alt="ZUNO" /><div><div className="aiconnect__eyebrow">ZUNO · MODEL CONTEXT PROTOCOL</div><h1>AI Connect</h1></div></div>
    <p className="muted">Kullandığın AI uygulamasını ZUNO Icon Store'a bağla. AI mevcut ikonları arayabilir ve senin için özel ikon taslakları oluşturabilir.</p>
    <div className="aiconnect__endpoint"><span>MCP SERVER</span><code>https://zuno-icon-store-mcp.mm2ultimatehub.workers.dev/mcp</code><button className="btn btn--ghost btn--sm" type="button" onClick={()=>void navigator.clipboard.writeText("https://zuno-icon-store-mcp.mm2ultimatehub.workers.dev/mcp")}>Adresi kopyala</button></div>
    <h2>Kişisel bağlantı anahtarı</h2>
