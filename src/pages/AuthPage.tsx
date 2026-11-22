@@ -5,9 +5,10 @@ import { toMessage } from "../lib/storeApi";
 import { useToast } from "../lib/toast";
 
 function OtpInput({ value, onChange }: { value: string; onChange: (next: string) => void }) {
+  const activeIndex = Math.min(value.length, 5);
   return <div className="zuno-otp" onClick={() => document.getElementById("zuno-signup-otp")?.focus()}>
-    <div className="zuno-otp-cells" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className={`zuno-otp-cell${value[index] ? " filled" : ""}`} key={index}><span className="otp-liquid" /><strong>{value[index] ?? ""}</strong>{!value[index] && <i />}</div>)}</div>
-    <input id="zuno-signup-otp" className="zuno-otp-real-input" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={value} onChange={(event) => onChange(event.target.value.replace(/\D/g, "").slice(0, 6))} aria-label="6 haneli e-posta doğrulama kodu" />
+    <div className="zuno-otp-cells" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className={`zuno-otp-cell${value[index] ? " filled" : ""}${index === activeIndex ? " active" : ""}`} key={index}><span className="otp-liquid" /><span className="otp-cell-glint" /><strong>{value[index] ?? ""}</strong>{!value[index] && <i />}</div>)}</div>
+    <input id="zuno-signup-otp" className="zuno-otp-real-input" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={value} onChange={(event) => onChange(event.target.value.replace(/\D/g, "").slice(0, 6))} aria-label={`6 haneli e-posta doğrulama kodu, ${value.length} karakter girildi`} />
   </div>;
 }
 
