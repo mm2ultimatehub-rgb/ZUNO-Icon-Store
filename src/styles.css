@@ -503,3 +503,37 @@ body { background:#071214; }
 @media (prefers-reduced-motion:reduce) {
   .hero-art *, .hero-art::before, .hero-art::after { animation:none !important; }
 }
+
+
+/* ZUNO button and navigation motion */
+.btn,.chip,.topnav a,.tabbar a,.like{-webkit-tap-highlight-color:transparent;transform:translateZ(0)}
+.btn{position:relative;isolation:isolate;overflow:hidden;transition:transform .42s cubic-bezier(.2,.85,.2,1),box-shadow .42s cubic-bezier(.2,.85,.2,1),border-color .32s ease,background-color .32s ease,color .28s ease,filter .32s ease}
+.btn::before{content:"";position:absolute;z-index:-1;inset:-2px;border-radius:inherit;background:linear-gradient(112deg,transparent 20%,rgba(255,255,255,.38) 46%,rgba(255,255,255,.08) 54%,transparent 78%);transform:translateX(-125%) skewX(-14deg);transition:transform .75s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.btn::after{content:"";position:absolute;inset:1px;border-radius:inherit;border:1px solid rgba(255,255,255,.16);opacity:0;transform:scale(.94);transition:opacity .28s ease,transform .38s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.btn:hover{transform:translateY(-3px) scale(1.018);filter:saturate(1.12) brightness(1.055)}
+.btn:hover::before{transform:translateX(125%) skewX(-14deg)}
+.btn:hover::after{opacity:1;transform:scale(1)}
+.btn:active{transform:translateY(0) scale(.955);filter:brightness(.96);transition-duration:.12s}
+.btn:focus-visible{outline:2px solid #b6fff1;outline-offset:4px}
+.btn--primary{background-size:180% 180%;animation:primary-glass-breathe 7s ease-in-out infinite}
+.btn--primary:hover{box-shadow:inset 0 1px 0 #fff,0 17px 42px rgba(73,190,171,.32),0 0 0 5px rgba(125,232,213,.07)}
+.btn--ghost:hover{border-color:rgba(190,255,244,.48);box-shadow:inset 0 1px 0 rgba(255,255,255,.34),0 12px 30px rgba(73,190,171,.12)}
+@keyframes primary-glass-breathe{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.chip{position:relative;isolation:isolate;overflow:hidden;transition:color .28s ease,background .38s cubic-bezier(.2,.8,.2,1),border-color .3s ease,transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s ease}
+.chip::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(110deg,transparent,rgba(255,255,255,.16),transparent);transform:translateX(-120%);transition:transform .6s ease;pointer-events:none}
+.chip:hover{transform:translateY(-2px)}
+.chip:hover::after{transform:translateX(120%)}
+.chip:active{transform:scale(.94)}
+.chip--on{transform:translateY(-1px) scale(1.025);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 7px 22px rgba(73,190,171,.13);animation:chip-select-in .38s cubic-bezier(.16,1,.3,1) both}
+@keyframes chip-select-in{0%{transform:scale(.92);filter:brightness(1.35)}65%{transform:scale(1.055)}100%{transform:scale(1.025);filter:none}}
+.topnav a,.tabbar a{position:relative;transition:color .3s ease,background .35s ease,box-shadow .35s ease,transform .35s cubic-bezier(.2,.8,.2,1)}
+.topnav a:hover{transform:translateY(-1px)}
+.topnav a.is-active,.tabbar a.is-active{box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 5px 18px rgba(73,190,171,.10);animation:nav-glass-in .38s cubic-bezier(.16,1,.3,1) both}
+@keyframes nav-glass-in{from{transform:scale(.94);background-color:rgba(161,239,224,.02)}to{transform:scale(1);background-color:rgba(161,239,224,.12)}}
+.like{transition:transform .25s cubic-bezier(.2,.8,.2,1),color .25s ease,background .25s ease}
+.like:hover{transform:scale(1.08)}.like:active{transform:scale(.9)}
+.card{transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .35s ease,box-shadow .45s ease,background .35s ease}
+.card:hover{transform:translateY(-7px) scale(1.012)}
+.search,.select,.form input,.form textarea{transition:border-color .3s ease,box-shadow .35s ease,background .3s ease,transform .3s ease}
+.search:focus-within{transform:translateY(-1px);background:rgba(9,35,34,.48)}
+@media(prefers-reduced-motion:reduce){.btn,.btn::before,.btn::after,.chip,.chip::after,.topnav a,.tabbar a,.like,.card,.search,.select,.form input,.form textarea{animation:none!important;transition:none!important}}
