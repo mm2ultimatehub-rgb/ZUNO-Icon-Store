@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useAuth } from "../lib/auth";
-import { uploadIcon, type IconCategory } from "../lib/iconStore";
+import { resolvePinterestImage, uploadExternalIcon, uploadIcon, type IconCategory, type ResolvedPinterestImage } from "../lib/iconStore";
 import { navigate } from "../lib/router";
 import { CATEGORIES, formatSize, toMessage } from "../lib/storeApi";
 import { useToast } from "../lib/toast";
@@ -18,7 +18,7 @@ export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [imageLink, setImageLink] = useState("");
-  const [linkLoaded, setLinkLoaded] = useState(false);
+  const [linkLoaded, setLinkLoaded] = useState(false);\n  const [resolvedLink, setResolvedLink] = useState<ResolvedPinterestImage | null>(null);\n  const [resolvingLink, setResolvingLink] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<IconCategory>("Minimal");
@@ -58,6 +58,35 @@ export default function Upload() {
     }
   }
   function onDrop(event: DragEvent) { event.preventDefault(); setDrag(false); pick(event.dataTransfer.files[0]); }
+
+  function isPinterestUrl(value: string) {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" && (url.hostname === "pin.it" || url.hostname === "pinterest.com" || url.hostname.endsWith(".pinterest.com"));
+    } catch { return false; }
+  }
+  async function previewLink() {
+    const value = imageLink.trim();
+    if (!value) return;
+    setError("");
+    if (isPinterestUrl(value)) {
+      setResolvingLink(true);
+      try {
+        const resolved = await resolvePinterestImage(value);
+        setResolvedLink(resolved);
+        setLinkLoaded(false);
+      } catch (reason) {
+        setResolvedLink(null);
+        setError(toMessage(reason));
+      } finally {
+        setResolvingLink(false);
+      }
+      return;
+    }
+    setResolvedLink(null);
+    setLinkLoaded(true);
+  }
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     setBusy(true); setError("");
@@ -83,7 +112,7 @@ export default function Upload() {
     } catch (reason) { setError(toMessage(reason)); setBusy(false); }
   }
 
-  const imageSource = preview || (linkLoaded ? imageLink.trim() : "");
+  const imageSource = preview || resolvedLink?.imageUrl || (linkLoaded ? imageLink.trim() : "");
 
   return <>
     <section className="authbox authbox--wide glass"><h1>İkon yükle</h1><p className="muted">PNG, WebP veya SVG · en fazla 10 MB</p>
@@ -93,7 +122,7 @@ export default function Upload() {
           <input ref={input} type="file" accept={ACCEPT} hidden onChange={(e) => pick(e.target.files?.[0])} />
         </div>
         {file && <p className="muted small">{file.name} · {formatSize(file.size)}</p>}
-        <label>Bağlantıdan görsel ekle<input type="url" value={imageLink} onChange={(e) => changeLink(e.target.value)} onBlur={() => { if (imageLink.trim()) setLinkLoaded(true); }} placeholder="https://.../gorsel.png" autoComplete="url" /></label>
+        <label>Bağlantıdan görsel ekle<input type="url" value={imageLink} onChange={(e) => changeLink(e.target.value)} onBlur={() => { if (imageLink.trim() && !isPinterestUrl(imageLink.trim())) setLinkLoaded(true); }} placeholder="https://.../gorsel.png" autoComplete="url" /></label>
         <p className="muted small">Görselin doğrudan bağlantısını yapıştır. Pinterest paylaşım sayfaları yerine mümkünse görselin kendi adresini kullan.</p>
         {imageLink.trim() && <button type="button" className="btn btn--ghost btn--wide" onClick={() => { setLinkLoaded(true); setError(""); }}>Bağlantıyı önizle</button>}
         <label>İkon adı<input value={title} maxLength={60} onChange={(e) => setTitle(e.target.value)} placeholder="Örn. Neon Dalga" required /></label>
