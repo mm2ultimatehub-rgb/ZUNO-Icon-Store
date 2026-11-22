@@ -64,10 +64,13 @@ export async function fetchCatalog(options: {
   search?: string;
   sort?: SortKey;
   username?: string;
+  ids?: string[];
   limit?: number;
 }): Promise<CatalogIcon[]> {
+  if (options.ids && options.ids.length === 0) return [];
   const client = requireSupabase();
   let query = client.from("zuno_icon_catalog").select(COLUMNS);
+  if (options.ids) query = query.in("id", options.ids);
   if (options.category && options.category !== "All") query = query.eq("category", options.category);
   if (options.username) query = query.eq("username", options.username);
   const term = cleanSearch(options.search ?? "");
@@ -81,7 +84,7 @@ export async function fetchCatalog(options: {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), 8000);
   try {
-    const { data, error } = await withTimeout(query.limit(Math.max(1, Math.min(options.limit ?? 120, 5000))).abortSignal(controller.signal), 9000);
+    const { data, error } = await withTimeout(query.limit(Math.max(1, Math.min(options.limit ?? (options.ids ? options.ids.length : 120), 5000))).abortSignal(controller.signal), 9000);
     if (error) throw error;
     return (data ?? []) as CatalogIcon[];
   } catch (reason) {
