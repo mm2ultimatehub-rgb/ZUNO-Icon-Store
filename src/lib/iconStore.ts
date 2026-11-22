@@ -1,6 +1,7 @@
 import { requireSupabase } from "./supabase";
 export type IconCategory = "Minimal" | "Dark" | "Colorful" | "Gradient" | "Other";
-export type StoreIcon = { id: string; title: string; description: string; category: string; username: string | null; asset_url: string; like_count: number; created_at: string };\nexport type ResolvedPinterestImage = { sourceUrl: string; imageUrl: string; mimeType: string };
+export type StoreIcon = { id: string; title: string; description: string; category: string; username: string | null; asset_url: string; like_count: number; created_at: string };
+export type ResolvedPinterestImage = { sourceUrl: string; imageUrl: string; mimeType: string };
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/webp", "image/svg+xml"];
 
