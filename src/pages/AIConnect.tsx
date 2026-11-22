@@ -14,7 +14,7 @@ async function hashToken(token:string) {
 function newToken() {
  const bytes=crypto.getRandomValues(new Uint8Array(32));
  let binary=""; bytes.forEach(v=>binary+=String.fromCharCode(v));
- return "zuno_mcp_"+btoa(binary).replace(/\\+/g,"-").replace(/\\//g,"_").replace(/=+$/,"");
+ return "zuno_mcp_"+btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 }
 function date(value:string|null) { return value ? new Date(value).toLocaleString("tr-TR") : "Henüz kullanılmadı"; }
 
