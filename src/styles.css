@@ -837,3 +837,20 @@ body { background:#071214; }
   }
   .orb { filter: blur(32px); opacity: .26; }
 }
+
+
+/* ZUNO AI Connect */
+.aiconnect{display:grid;gap:22px;max-width:900px;margin:0 auto}
+.aiconnect .authbox{width:100%;max-width:none}
+.aiconnect__eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted,#8792a2);margin-bottom:10px}
+.aiconnect__endpoint,.aiconnect__token,.aiconnect__guide{display:grid;gap:10px;padding:16px;margin:18px 0;border:1px solid var(--line,rgba(255,255,255,.14));border-radius:18px;background:rgba(255,255,255,.045)}
+.aiconnect__endpoint span{font-size:10px;letter-spacing:.14em;font-weight:800;opacity:.65}
+.aiconnect__endpoint code,.aiconnect__token code{overflow-wrap:anywhere;font-size:12px;line-height:1.6}
+.aiconnect__list{display:grid;gap:10px;margin-top:12px}
+.aiconnect__item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:16px;background:rgba(255,255,255,.035)}
+.aiconnect__item>div:first-child{display:grid;gap:5px;min-width:0}
+.aiconnect__item small{font-size:11px;opacity:.68;overflow-wrap:anywhere}
+.aiconnect__token{border-color:rgba(116,190,255,.35);background:rgba(116,190,255,.08)}
+.aiconnect__notice{font-size:13px;color:#8ed6ad}
+.aiconnect__guide p{font-size:13px;line-height:1.65;opacity:.75;margin:0}
+@media(max-width:560px){.aiconnect__item{align-items:flex-start;flex-direction:column}.aiconnect__item>.row{width:100%;flex-wrap:wrap}.aiconnect__endpoint{overflow:hidden}.aiconnect__endpoint code{font-size:11px}}
