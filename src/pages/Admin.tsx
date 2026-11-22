@@ -9,6 +9,18 @@ import { requireSupabase } from "../lib/supabase";
 
 const STORAGE_CAP = 1024 * 1024 * 1024;
 
+function bakuDayStartISO(): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Baku", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(new Date());
+  const part = (type: string) => parts.find((item) => item.type === type)?.value ?? "0";
+  const year = Number(part("year"));
+  const month = Number(part("month"));
+  const day = Number(part("day"));
+  // Azerbaijan uses UTC+04:00; convert Baku midnight to UTC for Supabase.
+  return new Date(Date.UTC(year, month - 1, day) - 4 * 60 * 60 * 1000).toISOString();
+}
+
 export default function Admin() {
   const { user, isAdmin, ready } = useAuth();
   const toast = useToast();
@@ -23,12 +35,11 @@ export default function Admin() {
     setLoading(true);
     setError("");
     try {
-      const dayStart = new Date();
-      dayStart.setHours(0, 0, 0, 0);
+      const dayStart = bakuDayStartISO();
       const [items, bytes, daily] = await Promise.all([
         fetchCatalog({ sort: "new", limit: 5000 }),
         fetchZunoStorageUsage(),
-        requireSupabase().from("zuno_icon_catalog").select("id", { count: "exact", head: true }).gte("created_at", dayStart.toISOString()),
+        requireSupabase().from("zuno_icon_catalog").select("id", { count: "exact", head: true }).gte("created_at", dayStart),
       ]);
       if (daily.error) throw daily.error;
       setIcons(items);
