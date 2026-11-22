@@ -380,3 +380,11 @@ body { background: #071214; }
   .grid { gap:13px; }
   .topbar { background:rgba(8,27,27,.76); }
 }
+
+/* Accessible password reveal controls */
+.password-field { position:relative; display:flex; align-items:center; width:100%; }
+.form .password-field input { padding-right:54px; }
+.password-toggle { position:absolute; right:7px; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:40px; height:38px; padding:0; border:1px solid transparent; border-radius:12px; background:rgba(190,244,232,.07); color:#b8e8df; cursor:pointer; transition:background .2s,border-color .2s,color .2s; }
+.password-toggle:hover { background:rgba(130,222,207,.15); border-color:rgba(163,240,228,.22); color:#effffb; }
+.password-toggle:focus-visible { outline:2px solid #a3f0e4; outline-offset:2px; }
+.password-toggle svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
