@@ -2,34 +2,27 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b0d12" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#07080d" />
     <meta name="description" content="ZUNO Icon Store — ZUNO için topluluk tarafından oluşturulan ikonlar." />
     <title>ZUNO Icon Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
     <style>
-      html, body { margin: 0; min-width: 320px; min-height: 100%; background: #0b0d12; color: #f4f5f8; font-family: Inter,system-ui,sans-serif; }
-      #startup { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 24px; text-align: center; box-sizing: border-box; }
-      #startup strong { font: 700 15px system-ui,sans-serif; letter-spacing: .16em; color: #e7edf8; }
-      #startup p { margin: 0; color: #aeb8c9; font-size: 13px; }
-      #startup .startup-glass { position: relative; width: 96px; height: 96px; display: grid; place-items: center; margin-bottom: 8px; border-radius: 50%; background: radial-gradient(circle at 32% 25%,rgba(255,255,255,.17),rgba(180,188,201,.055) 48%,rgba(255,255,255,.025)); border: 1px solid rgba(210,218,230,.2); box-shadow: inset 0 1px 2px rgba(255,255,255,.18),0 16px 45px rgba(0,0,0,.28); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); animation: startup-float 2.4s ease-in-out infinite; }
-      #startup .startup-glass:before { content:""; position:absolute; inset:9px; border-radius:50%; border:2px solid transparent; border-top-color:rgba(224,230,239,.8); border-right-color:rgba(180,190,205,.24); animation:startup-spin 1.45s cubic-bezier(.55,.1,.35,.9) infinite; }
-      #startup .startup-shape { width:39px; height:39px; border-radius:13px; background:linear-gradient(145deg,rgba(240,244,250,.62),rgba(150,160,176,.2) 55%,rgba(220,226,236,.38)); border:1px solid rgba(255,255,255,.42); box-shadow:inset 1px 1px 5px rgba(255,255,255,.38),0 8px 24px rgba(0,0,0,.25); animation:startup-morph 2.1s ease-in-out infinite; }
-      #startup .startup-dot { position:absolute; width:7px; height:7px; border-radius:50%; background:rgba(231,236,244,.9); box-shadow:0 0 13px rgba(220,228,240,.7); animation:startup-dot 1.45s linear infinite; }
-      @keyframes startup-spin { to { transform:rotate(360deg); } }
-      @keyframes startup-float { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.025); } }
-      @keyframes startup-morph { 0%,100% { border-radius:13px; transform:rotate(0deg) scale(.88); } 50% { border-radius:50%; transform:rotate(180deg) scale(1.08); } }
-      @keyframes startup-dot { from { transform:rotate(0deg) translateX(42px); } to { transform:rotate(360deg) translateX(42px); } }
-      @media(prefers-reduced-motion:reduce) { #startup .startup-glass,#startup .startup-glass:before,#startup .startup-shape,#startup .startup-dot { animation:none; } }
+      html, body { margin: 0; min-width: 320px; min-height: 100%; background: #07080d; color: #f5f6fb; font-family: system-ui, sans-serif; }
+      #startup { min-height: 100vh; display: grid; place-content: center; padding: 24px; text-align: center; box-sizing: border-box; }
+      #startup p { color: #b4b9cc; }
     </style>
   </head>
   <body>
     <div id="root">
       <main id="startup">
-        <div class="startup-glass" aria-hidden="true"><span class="startup-shape"></span><span class="startup-dot"></span></div>
         <strong>ZUNO ICON STORE</strong>
         <p>Uygulama yükleniyor…</p>
       </main>
     </div>
+    <noscript><p style="text-align:center;color:#b4b9cc">Bu site için JavaScript gerekli.</p></noscript>
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>

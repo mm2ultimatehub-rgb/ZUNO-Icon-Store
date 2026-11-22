@@ -10,15 +10,8 @@ Send this request header:
 
 No service-role or secret key belongs in the Android app.
 
-Each row includes:
-- `id`: stable icon ID
-- `title`, `description`, `category`
-- `username`: creator
-- `asset_url`: public PNG/WebP/SVG URL
-- `like_count`, `created_at`
+Each row includes a stable icon ID, title, description, category, creator username, public asset URL, like count, and creation time. The view also exposes `downloads`, `mime_type`, `file_size`, and `storage_path` for the website.
 
 For category filtering, add `&category=eq.Minimal`. For pagination, use `limit=40&offset=0`.
 
-The Android app should treat this as an optional community source alongside its existing eight built-in icons. Do not replace or remove the built-in icons when the network is unavailable. Cache successful catalog responses and keep the built-in picker usable offline.
-
-This endpoint is read-only for anonymous clients. Uploads and likes require an authenticated user through Supabase Auth and the website's RLS-protected tables.
+This endpoint is read-only for anonymous clients. Uploads and likes require an authenticated user through Supabase Auth and RLS-protected tables. Treat the community catalog as optional: retain the built-in icons and offline behavior when the network is unavailable.

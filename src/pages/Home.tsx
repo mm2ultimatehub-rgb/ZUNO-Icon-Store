@@ -1,0 +1,58 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../lib/auth";
+import { toggleIconLike } from "../lib/iconStore";
+import { CATEGORIES, fetchCatalog, fetchLikedIds, toMessage, type CatalogIcon, type SortKey } from "../lib/storeApi";
+import { useToast } from "../lib/toast";
+import SoftLoader from "../components/SoftLoader";
+import { EmptyState, ErrorState, GoButton, IconCard } from "../components/ui";
+
+export default function Home() {
+  const { user } = useAuth();
+  const toast = useToast();
+  const [category, setCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [term, setTerm] = useState("");
+  const [sort, setSort] = useState<SortKey>("new");
+  const [icons, setIcons] = useState<CatalogIcon[]>([]);
+  const [status, setStatus] = useState<"loading" | "error" | "ready">("loading");
+  const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [liked, setLiked] = useState<Set<string>>(new Set());
+  useEffect(() => { const timer = window.setTimeout(() => setTerm(search), 280); return () => window.clearTimeout(timer); }, [search]);
+  useEffect(() => {
+    let alive = true;
+    setStatus("loading");
+    fetchCatalog({ category, search: term, sort }).then((data) => { if (alive) { setIcons(data); setStatus("ready"); } })
+      .catch((reason: unknown) => { if (alive) { setError(toMessage(reason)); setStatus("error"); } });
+    return () => { alive = false; };
+  }, [category, term, sort, attempt]);
+  useEffect(() => {
+    if (!user) { setLiked(new Set()); return; }
+    let alive = true;
+    fetchLikedIds(user.id).then((ids) => { if (alive) setLiked(ids); }).catch(() => undefined);
+    return () => { alive = false; };
+  }, [user]);
+  async function onLike(icon: CatalogIcon) {
+    if (!user) { toast("Beğenmek için giriş yapmalısın.", "error"); window.location.hash = "#/login"; return; }
+    try {
+      const nowLiked = await toggleIconLike(icon.id);
+      setLiked((prev) => { const next = new Set(prev); if (nowLiked) next.add(icon.id); else next.delete(icon.id); return next; });
+      setIcons((prev) => prev.map((item) => item.id === icon.id ? { ...item, like_count: Math.max(0, item.like_count + (nowLiked ? 1 : -1)) } : item));
+    } catch (reason) { toast(toMessage(reason), "error"); }
+  }
+  const filtering = category !== "All" || term.trim() !== "";
+  return (
+    <>
+      <section className="hero"><p className="eyebrow">ZUNO TOPLULUĞU</p><h1>Ana ekranına yeni bir <span className="grad">görünüm</span> ver.</h1><p className="lead">Topluluğun tasarladığı ZUNO ikonlarını keşfet, indir ve kendi tasarımını paylaş.</p><div className="hero__actions"><GoButton to="/upload">İkon yükle</GoButton>{!user && <GoButton to="/register" variant="ghost">Ücretsiz kayıt ol</GoButton>}</div></section>
+      <section className="toolbar glass" aria-label="Arama ve filtreler">
+        <label className="search"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m20 20-4.2-4.2M10.5 17a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg><input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="İkon veya üretici ara…" aria-label="İkon ara" maxLength={60} /></label>
+        <select className="select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Sıralama"><option value="new">En yeni</option><option value="popular">En çok indirilen</option><option value="liked">En çok beğenilen</option></select>
+        <div className="chips" role="group" aria-label="Kategoriler">{[{ value: "All", label: "Tümü" }, ...CATEGORIES].map((c) => <button key={c.value} type="button" className={`chip ${category === c.value ? "chip--on" : ""}`} aria-pressed={category === c.value} onClick={() => setCategory(c.value)}>{c.label}</button>)}</div>
+      </section>
+      {status === "loading" && <SoftLoader title="ZUNO galerisi hazırlanıyor" subtitle="Topluluğun ikonları yükleniyor" />}
+      {status === "error" && <ErrorState message={error} onRetry={() => setAttempt((n) => n + 1)} />}
+      {status === "ready" && icons.length === 0 && <EmptyState title={filtering ? "Sonuç bulunamadı" : "Henüz paylaşılmış ikon yok"} text={filtering ? "Aramayı veya kategoriyi değiştirmeyi dene." : "İlk ikonu sen yükle, topluluğu başlat."} action={filtering ? <button type="button" className="btn btn--ghost" onClick={() => { setSearch(""); setCategory("All"); }}>Filtreleri temizle</button> : <GoButton to="/upload">İlk ikonu yükle</GoButton>} />}
+      {status === "ready" && icons.length > 0 && <><p className="count">{icons.length} ikon</p><div className="grid">{icons.map((icon, i) => <IconCard key={icon.id} icon={icon} index={i} liked={liked.has(icon.id)} onLike={onLike} />)}</div></>}
+    </>
+  );
+}

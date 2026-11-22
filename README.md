@@ -1,43 +1,49 @@
 # ZUNO Icon Store
 
-ZUNO Icon Store is the community gallery for discovering and sharing icon artwork. It is a static React + TypeScript site hosted on GitHub Pages, with Supabase providing authentication, catalog data, likes and public image storage.
+ZUNO Icon Store is the community gallery for discovering, downloading, and sharing icon artwork. It is a static React + TypeScript site hosted on GitHub Pages, with Supabase providing authentication, catalog data, likes, profiles, and public image storage.
 
 ## Features
 
-- Browse the public icon catalog and search by title.
-- Filter by Minimal, Dark, Colorful, Gradient and Other.
-- Register with username, email and password.
-- Sign in with username and password through the `username-login` Supabase Edge Function.
-- Upload PNG, WebP or SVG icon artwork (maximum 5 MB).
+- Browse, search, and filter the public icon catalog.
+- Sort by newest, most downloaded, and most liked.
+- Register with username, email, and password; confirm signup using the six-digit email OTP.
+- Sign in with username and password through the `username-login` Edge Function.
+- Upload PNG, WebP, and SVG icons up to 5 MB.
 - Like and unlike community designs while signed in.
-- Responsive liquid-glass interface for mobile and desktop.
+- Public creator profiles with editable biography and owner-only icon management.
+- Download icons; the `zuno-record-download` Edge Function counts at most one download per icon, per IP fingerprint, per UTC day.
+- Responsive liquid-glass UI with animated six-digit OTP cells and a canvas-based morphing glass loader.
 
 ## Stack
 
-- Vite + React + TypeScript
-- GitHub Pages via GitHub Actions
-- Supabase Auth, Postgres, Storage and Edge Functions
+- React 19 + TypeScript + Vite
+- GitHub Pages + GitHub Actions
+- Supabase Auth, Postgres, Storage, and Edge Functions
 
 ## GitHub Pages
 
-1. In repository Settings → Pages, set the source to **GitHub Actions**.
-2. The public Supabase URL and publishable key are included in `src/lib/supabase.ts`. These are browser-safe publishable credentials; database and storage access must remain protected by Row Level Security.
-3. Push to `main`; the workflow builds and deploys the site.
-
-Never put a Supabase secret or service-role key in this repository or browser bundle.
+1. In repository Settings → Pages, select **GitHub Actions** as the source.
+2. Push to `main`; the included workflow builds and deploys the site.
+3. The public Supabase URL and publishable key are browser-safe. Never put a Supabase secret or service-role key in this repository or browser bundle.
 
 ## Supabase requirements
 
-The frontend expects the existing Supabase project and schema to provide:
+The frontend expects:
 
-- The read-only `zuno_icon_catalog` view with `id,title,description,category,username,asset_url,like_count,created_at`.
-- The `zuno_icons` table and public `zuno-icons` storage bucket for uploads.
-- The `zuno_icon_likes` table with RLS policies that allow users to manage only their own likes.
-- The `username-login` Edge Function. It must resolve a username to the corresponding account and return a Supabase Auth session only after verifying the password. Do not expose password hashes or service-role credentials to the browser.
+- The `zuno_icon_catalog` view with `id,title,description,category,username,asset_url,like_count,created_at,downloads,mime_type,file_size,storage_path`.
+- The `zuno_icons` and `zuno_icon_likes` tables, protected by RLS.
+- The `profiles` table with public username/bio data and owner-only updates.
+- The public `zuno-icons` bucket with a 5 MB upload limit and PNG/WebP/SVG MIME restrictions. Storage policies must restrict writes and deletes to the authenticated user's own folder.
+- The `username-login` Edge Function (included in `supabase/functions/username-login`) deployed with `verify_jwt=false`. It must resolve a username to its account and verify the password through Supabase Auth. Server-side service-role credentials must remain in the Edge Function environment.
+- The `zuno-record-download` Edge Function (included in `supabase/functions/zuno-record-download`) deployed with `verify_jwt=false`. It hashes the proxy-provided client IP with an HMAC key and retains the hash only for a short rate-limit window. It uses the service-role key only server-side to call the restricted download-counter function.
 
-User uploads are limited in the client to PNG, WebP and SVG up to 5 MB. Enforce file size, MIME type, ownership and authorization again with Supabase Storage policies/database constraints; client checks alone are not security controls.
+For email code verification, the Supabase **Confirm signup** email template must include the six-digit `{{ .Token }}` value. The frontend calls `auth.verifyOtp({ email, token, type: "email" })` with that code. A confirmation-link-only template is not compatible with the six-digit code screen.
 
-If email confirmation is enabled in Supabase Auth, new users must verify their email before a session is created.
+The `zuno_icon_download_events` table is private: RLS is enabled, and only `service_role` receives table privileges. Raw client IPs are not stored. Counts are approximate unique daily downloads, not a raw click counter. Database constraints also enforce the supported category set, a 300-character profile bio, and storage paths under the owning user ID.
+
+## Supabase migration history
+
+The `supabase/migrations` folder includes the recorded database migration history for the linked project, including the newer private download-event table, RLS policy/performance adjustments, and content constraints. Existing deployments that already applied these versions should not be re-applied SQL manually.
 
 ## Local development
 
@@ -47,4 +53,4 @@ npm run dev
 npm run build
 ```
 
-For the ZUNO Android app's read-only community catalog contract, see [docs/android-integration.md](docs/android-integration.md). The Android app should retain its built-in icons and offline behavior when the network is unavailable.
+The public Supabase values can be overridden with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. See [docs/android-integration.md](docs/android-integration.md) for the read-only Android catalog contract.
