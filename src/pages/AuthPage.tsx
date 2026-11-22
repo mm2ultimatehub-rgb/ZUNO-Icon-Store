@@ -5,10 +5,10 @@ import { toMessage } from "../lib/storeApi";
 import { useToast } from "../lib/toast";
 
 function OtpInput({ value, onChange }: { value: string; onChange: (next: string) => void }) {
-  const activeIndex = Math.min(value.length, 6);
+  const activeIndex = Math.min(value.length, 7);
   return <div className="zuno-otp" onClick={() => document.getElementById("zuno-signup-otp")?.focus()}>
-    <div className="zuno-otp-cells" aria-hidden="true">{Array.from({ length: 7 }, (_, index) => <div className={`zuno-otp-cell${value[index] ? " filled" : ""}${index === activeIndex ? " active" : ""}`} key={index}><span className="otp-liquid" /><span className="otp-cell-glint" /><strong>{value[index] ?? ""}</strong>{!value[index] && <i />}</div>)}</div>
-    <input id="zuno-signup-otp" className="zuno-otp-real-input" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{7}" maxLength={7} required value={value} onChange={(event) => onChange(event.target.value.replace(/\D/g, "").slice(0, 7))} aria-label={`7 haneli e-posta doğrulama kodu, ${value.length} karakter girildi`} />
+    <div className="zuno-otp-cells" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <div className={`zuno-otp-cell${value[index] ? " filled" : ""}${index === activeIndex ? " active" : ""}`} key={index}><span className="otp-liquid" /><span className="otp-cell-glint" /><strong>{value[index] ?? ""}</strong>{!value[index] && <i />}</div>)}</div>
+    <input id="zuno-signup-otp" className="zuno-otp-real-input" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{8}" maxLength={8} required value={value} onChange={(event) => onChange(event.target.value.replace(/\D/g, "").slice(0, 8))} aria-label={`8 haneli e-posta doğrulama kodu, ${value.length} karakter girildi`} />
   </div>;
 }
 
@@ -53,13 +53,13 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
 
   async function onVerify(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError("");
-    if (!/^\d{7}$/.test(otp)) { setError("7 haneli doğrulama kodunu gir."); return; }
+    if (!/^\d{8}$/.test(otp)) { setError("8 haneli doğrulama kodunu gir."); return; }
     setBusy(true);
     try {
       const result = await verifySignupOtp(needsConfirm, otp);
       if (!result.session || !result.user) throw new Error("E-posta doğrulandı ancak oturum açılamadı. Kullanıcı adı ve şifrenle giriş yap.");
       toast("E-posta doğrulandı. ZUNO'ya hoş geldin."); navigate("/profile");
-    } catch (reason) { setError(toMessage(reason)); }
+    } catch (reason) { const message = toMessage(reason); setError(/otp_expired|expired or is invalid/i.test(message) ? "Kodun süresi dolmuş veya eski kodu girdin. Yeni kod isteyip yalnızca en son gelen 8 rakamlı kodu kullan." : message); }
     finally { setBusy(false); }
   }
 
@@ -85,8 +85,8 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
     finally { setBusy(false); }
   }
 
-  if (needsConfirm) return <section className="authbox glass"><h1>E-postanı doğrula</h1><p className="muted otp-instructions"><strong>{needsConfirm}</strong>E-posta adresine gönderilen 7 haneli kodu gir.</p>
-    <form className="form" onSubmit={onVerify}><label>Doğrulama kodu<OtpInput value={otp} onChange={setOtp} /></label>{error && <p className="form__error" role="alert">{error}</p>}<button type="submit" className="btn btn--primary btn--wide" disabled={busy || otp.length !== 7}>{busy ? "Doğrulanıyor…" : "E-postayı doğrula"}</button></form>
+  if (needsConfirm) return <section className="authbox glass"><h1>E-postanı doğrula</h1><p className="muted otp-instructions"><strong>{needsConfirm}</strong>E-posta adresine gönderilen 8 haneli kodu gir.</p>
+    <form className="form" onSubmit={onVerify}><label>Doğrulama kodu<OtpInput value={otp} onChange={setOtp} /></label>{error && <p className="form__error" role="alert">{error}</p>}<button type="submit" className="btn btn--primary btn--wide" disabled={busy || otp.length !== 8}>{busy ? "Doğrulanıyor…" : "E-postayı doğrula"}</button></form>
     <div className="otp-actions"><button type="button" className="otp-resend" onClick={() => void onResend()} disabled={busy || resendIn > 0}>{resendIn > 0 ? `Yeni kodu ${resendIn} sn sonra iste` : "Yeni kod gönder"}</button><button type="button" className="otp-resend" onClick={() => { setNeedsConfirm(""); setOtp(""); setResendIn(0); setError(""); }}>E-posta adresini değiştir</button></div>
   </section>;
 
