@@ -5,7 +5,7 @@ import { navigate } from "../lib/router";
 import { CATEGORIES, formatSize, toMessage } from "../lib/storeApi";
 import { useToast } from "../lib/toast";
 import { EmptyState, GoButton } from "../components/ui";
-import SoftLoader from "../components/SoftLoader";
+import UploadWaveLoader from "../components/UploadWaveLoader";
 
 const ACCEPT = "image/png,image/webp,image/svg+xml";
 
@@ -65,6 +65,6 @@ export default function Upload() {
         <button type="submit" className="btn btn--primary btn--wide" disabled={busy}>{busy ? "Yükleniyor…" : "Yükle ve paylaş"}</button>
       </form>
     </section>
-    {busy && <div className="upload-progress-overlay"><SoftLoader title="İkonun paylaşılıyor" subtitle="Dosyan güvenli biçimde yükleniyor" /></div>}
+    {busy && <div className="upload-progress-overlay"><UploadWaveLoader preview={preview} title={file?.name ?? title} /></div>}
   </>;
 }
