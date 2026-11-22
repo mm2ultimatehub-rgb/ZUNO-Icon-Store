@@ -14,14 +14,14 @@ export function Shell({ route, children }: { route: string; children: ReactNode 
     <div className="shell">
       <div className="aurora" aria-hidden="true"><i className="orb orb--a" /><i className="orb orb--b" /><i className="orb orb--c" /></div>
       <header className="topbar glass">
-        <a className="brand" href="#/" aria-label="ZUNO Icon Store ana sayfa"><span className="brand__mark" aria-hidden="true"><img className="brand__logo" src="./zuno-logo.svg" alt="" /></span><span className="brand__text">ZUNO <em>Icon Store</em></span></a>
+        <a className="brand" href="#/" aria-label="ZUNO Icon Store ana sayfa"><span className="brand__mark" aria-hidden="true"><img className="brand__logo" src="./zuno-logo.svg?v=2" alt="" /></span><span className="brand__text">ZUNO <em>Icon Store</em></span></a>
         <nav className="topnav" aria-label="Ana menü"><a className={is("home")} href="#/">Keşfet</a><a className={is("upload")} href="#/upload">Yükle</a>{isAdmin && <a className={is("admin")} href="#/admin">Yönetim</a>}</nav>
         <div className="topbar__end">
           {!ready ? <span className="shimmer chip-skel" /> : user ? <a className="btn btn--ghost btn--sm" href="#/profile"><span className="avatar">{(username ?? "?").slice(0, 1).toUpperCase()}</span><span className="hide-sm">@{username ?? "profil"}</span></a> : <><a className="btn btn--ghost btn--sm hide-sm" href="#/login">Giriş yap</a><a className="btn btn--primary btn--sm" href="#/register">Kayıt ol</a></>}
         </div>
       </header>
       <main className="page"><div className="route-view" key={route}>{children}</div></main>
-      <footer className="footer"><img className="footer__logo" src="./zuno-logo.svg" alt="" /> <span>ZUNO Icon Store · Topluluğun ürettiği ikonlar</span></footer>
+      <footer className="footer"><img className="footer__logo" src="./zuno-logo.svg?v=2" alt="" /> <span>ZUNO Icon Store · Topluluğun ürettiği ikonlar</span></footer>
       <nav className="tabbar glass" aria-label="Alt menü">
         <a className={is("home")} href="#/"><NavIcon kind="home" /><span>Keşfet</span></a>
         <a className={is("upload")} href="#/upload"><NavIcon kind="upload" /><span>Yükle</span></a>
