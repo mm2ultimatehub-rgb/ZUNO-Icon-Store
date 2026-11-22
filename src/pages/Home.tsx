@@ -21,10 +21,38 @@ export default function Home() {
   useEffect(() => { const timer = window.setTimeout(() => setTerm(search), 280); return () => window.clearTimeout(timer); }, [search]);
   useEffect(() => {
     let alive = true;
+    let timedOut = false;
+    setError("");
     setStatus("loading");
-    fetchCatalog({ category, search: term, sort }).then((data) => { if (alive) { setIcons(data); setStatus("ready"); } })
-      .catch((reason: unknown) => { if (alive) { setError(toMessage(reason)); setStatus("error"); } });
-    return () => { alive = false; };
+
+    // Ağ isteği takılırsa yükleme ekranında sonsuza kadar kalma.
+    const timer = window.setTimeout(() => {
+      timedOut = true;
+      if (alive) {
+        setError("İkon sunucusu 12 saniye içinde yanıt vermedi. Bağlantıyı kontrol edip yeniden deneyebilirsin.");
+        setStatus("error");
+      }
+    }, 12000);
+
+    fetchCatalog({ category, search: term, sort })
+      .then((data) => {
+        if (alive && !timedOut) {
+          setIcons(data);
+          setStatus("ready");
+        }
+      })
+      .catch((reason: unknown) => {
+        if (alive && !timedOut) {
+          setError(toMessage(reason));
+          setStatus("error");
+        }
+      })
+      .finally(() => window.clearTimeout(timer));
+
+    return () => {
+      alive = false;
+      window.clearTimeout(timer);
+    };
   }, [category, term, sort, attempt]);
   useEffect(() => {
     if (!user) { setLiked(new Set()); return; }
