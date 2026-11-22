@@ -198,3 +198,32 @@ export function formatDate(iso: string): string {
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
 }
+
+
+/** Admin paneli: zuno-icons bucket içindeki gerçek dosya boyutlarını klasörleri dolaşarak toplar. */
+export async function fetchZunoStorageUsage(): Promise<number> {
+  const client = requireSupabase();
+  const bucket = client.storage.from("zuno-icons");
+  let total = 0;
+  async function walk(folder: string, depth: number): Promise<void> {
+    if (depth > 3) return;
+    let offset = 0;
+    while (true) {
+      const { data, error } = await bucket.list(folder, { limit: 1000, offset, sortBy: { column: "name", order: "asc" } });
+      if (error) throw error;
+      const entries = data ?? [];
+      for (const entry of entries) {
+        if (!entry.id && !entry.metadata) {
+          await walk(folder ? folder + "/" + entry.name : entry.name, depth + 1);
+        } else {
+          const size = Number((entry.metadata as { size?: unknown } | null)?.size ?? 0);
+          if (Number.isFinite(size) && size > 0) total += size;
+        }
+      }
+      if (entries.length < 1000) break;
+      offset += entries.length;
+    }
+  }
+  await walk("", 0);
+  return total;
+}
