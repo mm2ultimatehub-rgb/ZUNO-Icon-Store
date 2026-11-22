@@ -53,7 +53,7 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
 
   async function onVerify(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError("");
-    if (!/^\d{6}$/.test(otp)) { setError("6 haneli doğrulama kodunu gir."); return; }
+    if (!/^\d{7}$/.test(otp)) { setError("7 haneli doğrulama kodunu gir."); return; }
     setBusy(true);
     try {
       const result = await verifySignupOtp(needsConfirm, otp);
