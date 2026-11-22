@@ -4,8 +4,8 @@ import type { StoreIcon } from "./iconStore";
 export type CatalogIcon = StoreIcon & {
   downloads: number;
   mime_type: string;
-  file_size: number;
-  storage_path: string;
+  file_size: number | null;
+  storage_path: string | null;
 };
 export type SortKey = "new" | "popular" | "liked";
 export type ProfileRow = { id: string; username: string; bio: string; created_at: string };
@@ -149,8 +149,8 @@ export async function deleteIcon(icon: Pick<CatalogIcon, "id" | "storage_path">)
   const { data, error } = await withTimeout(client.from("zuno_icons").delete().eq("id", icon.id).select("id"));
   if (error) throw error;
   if (!data || data.length === 0) throw new Error("Bu ikonu silme iznin yok.");
-  // Satır silindi; dosya temizliği başarısız olsa bile katalog tutarlı kalır.
-  await client.storage.from("zuno-icons").remove([icon.storage_path]);
+  // Pinterest-hosted records have no object in Supabase Storage.
+  if (icon.storage_path) await client.storage.from("zuno-icons").remove([icon.storage_path]);
 }
 
 export async function registerDownload(id: string): Promise<boolean> {
@@ -186,7 +186,8 @@ export async function downloadIconFile(icon: CatalogIcon): Promise<boolean> {
   return registerDownload(icon.id);
 }
 
-export function formatSize(bytes: number): string {
+export function formatSize(bytes: number | null | undefined): string {
+  if (bytes == null || bytes <= 0) return "Bağlantı";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
