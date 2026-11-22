@@ -865,3 +865,9 @@ body { background:#071214; }
 .aiconnect__brand h1{margin:2px 0 0;font-family:var(--display);font-size:clamp(27px,4vw,38px);line-height:1.1}
 .aiconnect__brand .aiconnect__eyebrow{margin:0}
 @media(max-width:420px){.aiconnect__brand{gap:11px}.aiconnect__brand>img{width:48px;height:48px;flex-basis:48px}}
+
+
+/* Official ZUNO logo sizing — use the shared public SVG without the old gradient tile. */
+.brand__mark{width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:transparent;box-shadow:none;overflow:visible}
+.brand__logo{width:42px;height:42px;max-width:none;object-fit:contain;display:block}
+.footer__logo{width:28px;height:28px;flex:0 0 28px}
