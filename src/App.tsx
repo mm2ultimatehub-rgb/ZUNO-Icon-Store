@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
   listIcons, listLikedIconIds, resendSignupOtp, signInWithUsername, signOut, signUpWithUsername, toggleIconLike, verifySignupOtp,
@@ -20,6 +20,113 @@ function IconMark({ name }: { name: string }) {
     user: "M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name] ?? paths.grid} /></svg>;
+}
+
+
+function SoftLoader({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [shapeName, setShapeName] = useState("Yumuşak yıldız");
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const TAU = Math.PI * 2;
+    const N = 180;
+    const defs = [
+      { name: "Yumuşak yıldız", radius: (t: number) => 1 + .1 * Math.cos(10 * t) },
+      { name: "Altıgen", radius: (t: number) => { const seg = TAU / 6; const p = ((((t + Math.PI / 2) % seg) + seg) % seg) - seg / 2; return Math.cos(Math.PI / 6) / Math.cos(p); } },
+      { name: "Beşgen", radius: (t: number) => { const seg = TAU / 5; const p = ((((t + Math.PI / 2) % seg) + seg) % seg) - seg / 2; return Math.cos(Math.PI / 5) / Math.cos(p); } },
+      { name: "Kare", radius: (t: number) => { const a = t + Math.PI / 2 + Math.PI / 4; const seg = TAU / 4; const p = ((((a % seg) + seg) % seg) - seg / 2); return Math.cos(Math.PI / 4) / Math.cos(p); } },
+      { name: "Üçgen", radius: (t: number) => { const seg = TAU / 3; const p = ((((t + Math.PI / 2) % seg) + seg) % seg) - seg / 2; return Math.cos(Math.PI / 3) / Math.cos(p); } },
+      { name: "Hap", radius: (t: number) => Math.pow(Math.pow(Math.abs(Math.cos(t)) / .74, 3.2) + Math.pow(Math.abs(Math.sin(t)), 3.2), -1 / 3.2) },
+      { name: "Güneş", radius: (t: number) => 1 + .14 * Math.cos(8 * t) },
+    ];
+    const shapes = defs.map(def => {
+      const raw = Array.from({ length: N }, (_, i) => def.radius(i / N * TAU));
+      const mean = raw.reduce((sum, value) => sum + value, 0) / N;
+      return { name: def.name, values: raw.map(value => value * (.92 / mean)) };
+    });
+    let width = 0, height = 0, dpr = 1, raf = 0, start = performance.now(), lastLabel = "";
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width; height = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.max(1, Math.round(width * dpr));
+      canvas.height = Math.max(1, Math.round(height * dpr));
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    resize();
+    const draw = (now: number) => {
+      const elapsed = reduced ? 0 : (now - start) / 1000;
+      const step = Math.floor(elapsed / .8);
+      const local = (elapsed - step * .8) / .55;
+      const eased = local < 1 ? 1 + 2.1 * Math.pow(local - 1, 3) + 1.1 * Math.pow(local - 1, 2) : 1;
+      const a = shapes[step % shapes.length];
+      const b = shapes[(step + 1) % shapes.length];
+      const mix = Math.max(0, Math.min(1, eased));
+      if (lastLabel !== a.name) { lastLabel = a.name; setShapeName(a.name); }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+      const cx = width / 2, cy = height / 2, outer = Math.min(width, height) * .43;
+      const rotation = elapsed * .9 + (step + mix) * .55;
+      const disc = new Path2D();
+      disc.arc(cx, cy, outer, 0, TAU);
+      const path = new Path2D();
+      for (let i = 0; i < N; i++) {
+        const radius = a.values[i] + (b.values[i] - a.values[i]) * mix;
+        const angle = i / N * TAU + rotation;
+        const r = outer * .69 * radius;
+        const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
+        if (i === 0) path.moveTo(x, y); else path.lineTo(x, y);
+      }
+      path.closePath();
+      const container = ctx.createRadialGradient(cx - outer * .42, cy - outer * .5, 2, cx, cy, outer);
+      container.addColorStop(0, "rgba(180,205,255,.16)");
+      container.addColorStop(.58, "rgba(92,125,184,.10)");
+      container.addColorStop(1, "rgba(9,18,34,.72)");
+      ctx.fillStyle = container; ctx.fill(disc);
+      ctx.lineWidth = 1.4; ctx.strokeStyle = "rgba(224,236,255,.28)"; ctx.stroke(disc);
+      ctx.save(); ctx.clip(disc);
+      const glow = ctx.createRadialGradient(cx - outer * .3, cy - outer * .38, 0, cx, cy, outer * 1.2);
+      glow.addColorStop(0, "rgba(178,211,255,.18)"); glow.addColorStop(1, "rgba(110,145,205,0)");
+      ctx.fillStyle = glow; ctx.fillRect(cx - outer, cy - outer, outer * 2, outer * 2);
+      ctx.restore();
+      const fill = ctx.createLinearGradient(cx - outer, cy - outer, cx + outer, cy + outer);
+      fill.addColorStop(0, "rgba(245,250,255,.78)");
+      fill.addColorStop(.35, "rgba(178,211,255,.48)");
+      fill.addColorStop(.72, "rgba(132,163,220,.30)");
+      fill.addColorStop(1, "rgba(235,244,255,.68)");
+      ctx.save();
+      ctx.shadowColor = "rgba(145,185,255,.32)"; ctx.shadowBlur = 18;
+      ctx.fillStyle = fill; ctx.fill(path);
+      ctx.restore();
+      ctx.save(); ctx.lineWidth = outer * .035;
+      const rim = ctx.createLinearGradient(cx - outer, cy - outer, cx + outer, cy + outer);
+      rim.addColorStop(0, "rgba(255,255,255,.92)"); rim.addColorStop(.45, "rgba(255,255,255,.12)"); rim.addColorStop(1, "rgba(210,230,255,.78)");
+      ctx.strokeStyle = rim; ctx.stroke(path);
+      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255,255,255,.28)"; ctx.stroke(path);
+      ctx.restore();
+      const dots = 3;
+      for (let i = 0; i < dots; i++) {
+        const angle = elapsed * 1.8 + i * TAU / dots;
+        const x = cx + Math.cos(angle) * outer * 1.08, y = cy + Math.sin(angle) * outer * 1.08;
+        ctx.beginPath(); ctx.arc(x, y, i === 0 ? 3.2 : 2.2, 0, TAU);
+        ctx.fillStyle = "rgba(218,234,255,.9)"; ctx.shadowColor = "rgba(170,205,255,.8)"; ctx.shadowBlur = 10; ctx.fill(); ctx.shadowBlur = 0;
+      }
+      if (!reduced) raf = requestAnimationFrame(draw);
+    };
+    draw(performance.now());
+    if (!reduced) raf = requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(raf); observer.disconnect(); };
+  }, []);
+  return <div className="soft-loader" role="status" aria-live="polite">
+    <div className="soft-loader-stage"><canvas ref={canvasRef} aria-hidden="true" /></div>
+    <strong>{title}</strong><span className="soft-loader-shape-name">{shapeName}</span>
+    <div className="soft-loader-status"><span>YÜKLENİYOR</span><i /><i /><i /></div>
+    <small>{subtitle}</small>
+  </div>;
 }
 
 function AnimatedOtpInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
@@ -227,7 +334,7 @@ export default function App() {
           <label className="search-box"><IconMark name="search" /><input id="icon-search" value={search} onChange={event => setSearch(event.target.value)} placeholder="İkonlarda ara..." aria-label="İkonlarda ara" /><kbd>/</kbd></label>
           <div className="category-list" aria-label="Kategori filtreleri">{categories.map(item => <button key={item} className={category === item ? "category active" : "category"} onClick={() => setCategory(item)}>{item === "All" ? "Tümü" : item}</button>)}</div>
         </div>
-        {loading ? <div className="loading-state" role="status" aria-live="polite"><div className="loader-glass" aria-hidden="true"><span className="loader-shape" /><span className="loader-orbit" /></div><p>İkonlar yükleniyor</p><span className="loading-caption">Koleksiyon hazırlanıyor…</span></div> :
+        {loading ? <SoftLoader title="İkonlar yükleniyor" subtitle="Koleksiyon hazırlanıyor…" /> :
           icons.length ? <div className="icon-grid">{icons.map(icon => <article className="icon-card glass" key={icon.id}>
             <div className="icon-preview"><img src={icon.asset_url} alt={icon.title} loading="lazy" /><button className={liked.includes(icon.id) ? "like-button liked" : "like-button"} aria-label={liked.includes(icon.id) ? "Beğeniyi kaldır" : "İkonu beğen"} aria-pressed={liked.includes(icon.id)} onClick={() => void handleLike(icon.id)}><IconMark name="heart" /></button></div>
             <div className="icon-info"><div><h3>{icon.title}</h3><p>{icon.category} · @{icon.username || "creator"}</p></div><span className="like-count"><IconMark name="heart" /> {icon.like_count ?? 0}</span></div>
@@ -269,6 +376,7 @@ export default function App() {
           <button className="button button-primary submit-button" disabled={uploadBusy}>{uploadBusy ? "Yükleniyor…" : "İkonu yayınla"}</button>
         </form><p className="privacy-note">Yalnızca sana ait veya paylaşma iznin olan tasarımları yükle.</p>
       </section></div>}
+      {uploadBusy && <div className="upload-progress-overlay"><SoftLoader title="İkonun yükleniyor" subtitle="Tasarımın ZUNO topluluğuna ekleniyor…" /></div>}
     </main>
   );
 }
