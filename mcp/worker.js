@@ -3,7 +3,32 @@ const TOOLS = [
   {
     name: "search_icons",
     description: "Search public ZUNO Icon Store icons by title. Read-only. Use this to find existing icons before creating a new one.",
-    inputSchema: { type: "object", properties: { search: { type: "string", description: "Optional title search, max 60 characters." } }, additionalProperties: false }
+    inputSchema: { type: "object", properties: { search: { type: "string", description: "Optional title search, max 60 characters." }, category: { type: "string", description: "Optional exact category filter." }, sort: { type: "string", enum: ["newest", "popular"], description: "Newest first or most liked first." }, limit: { type: "integer", minimum: 1, maximum: 50 }, offset: { type: "integer", minimum: 0 } }, additionalProperties: false }
+  },
+  {
+    name: "list_icon_categories",
+    description: "List all categories currently used by public ZUNO Icon Store icons. Read-only.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false }
+  },
+  {
+    name: "get_icon_details",
+    description: "Get full public details for one icon using its icon_id. Read-only.",
+    inputSchema: { type: "object", properties: { icon_id: { type: "string", minLength: 1 } }, required: ["icon_id"], additionalProperties: false }
+  },
+  {
+    name: "list_my_icons",
+    description: "List icons owned by the connected ZUNO user, including metadata and public image URLs. Read-only.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false }
+  },
+  {
+    name: "update_my_icon",
+    description: "Update metadata (title, description, category) for an icon owned by the connected user. Requires a ZUNO personal MCP token. Only change fields the user asked to change.",
+    inputSchema: { type: "object", properties: { icon_id: { type: "string" }, title: { type: "string", minLength: 2, maxLength: 60 }, description: { type: "string", maxLength: 500 }, category: { type: "string", enum: ["Minimal", "Dark", "Colorful", "Gradient", "Other"] } }, required: ["icon_id"], additionalProperties: false }
+  },
+  {
+    name: "delete_my_icon",
+    description: "PERMANENTLY delete one icon and its stored image, only if it belongs to the connected user. Destructive and irreversible: call ONLY after the user explicitly names the icon and confirms deletion. Requires a ZUNO personal MCP token.",
+    inputSchema: { type: "object", properties: { icon_id: { type: "string" } }, required: ["icon_id"], additionalProperties: false }
   },
   {
     name: "create_icon_draft",
@@ -96,6 +121,11 @@ export default {
     const args = message.params?.arguments || {};
     const actions = {
       search_icons: "list_icons",
+      list_icon_categories: "list_categories",
+      get_icon_details: "get_icon_details",
+      list_my_icons: "list_my_icons",
+      update_my_icon: "update_my_icon",
+      delete_my_icon: "delete_my_icon",
       create_icon_draft: "create_draft",
       publish_icon: "publish_icon",
       list_my_drafts: "list_drafts"
