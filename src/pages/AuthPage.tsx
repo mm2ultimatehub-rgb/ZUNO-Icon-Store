@@ -24,6 +24,8 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
   const [needsConfirm, setNeedsConfirm] = useState("");
   const [otp, setOtp] = useState("");
   const [resendIn, setResendIn] = useState(0);
+  const [loginVerifyRequired, setLoginVerifyRequired] = useState(false);
+  const [loginVerifyEmail, setLoginVerifyEmail] = useState("");
   const isLogin = mode === "login";
   useEffect(() => { if (resendIn <= 0) return; const timer = window.setTimeout(() => setResendIn((value) => Math.max(0, value - 1)), 1000); return () => window.clearTimeout(timer); }, [resendIn]);
 
@@ -42,6 +44,7 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
       }
     } catch (reason) {
       const message = toMessage(reason);
+      if (isLogin && /e-posta.*doğrulanmamış/i.test(message)) setLoginVerifyRequired(true);
       setError(message.includes("too many colons in address") ? "E-posta gönderim sunucusunun SMTP adresi hatalı yapılandırılmış. Supabase doğrulama e-postasını gönderemiyor; yönetici SMTP ayarlarını düzeltmeli." : message);
     }
     finally { setBusy(false); }
@@ -59,6 +62,20 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
     finally { setBusy(false); }
   }
 
+  async function onStartLoginVerification() {
+    const target = loginVerifyEmail.trim();
+    if (!target || !target.includes("@") || !target.includes(".")) {
+      setError("Kayıt sırasında kullandığın geçerli e-posta adresini gir.");
+      return;
+    }
+    setBusy(true); setError("");
+    try {
+      await resendSignupOtp(target);
+      setNeedsConfirm(target); setOtp(""); setResendIn(60); setLoginVerifyRequired(false);
+      toast("Doğrulama kodu e-posta adresine gönderildi.");
+    } catch (reason) { setError(toMessage(reason)); }
+    finally { setBusy(false); }
+  }
   async function onResend() {
     if (!needsConfirm || resendIn > 0) return;
     setBusy(true); setError("");
@@ -77,7 +94,9 @@ export default function AuthPage({ mode }: { mode: "login" | "register" }) {
       {!isLogin && <label>E-posta<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" autoCapitalize="none" required placeholder="sen@ornek.com" /></label>}
       <label>Şifre<div className="password-field"><input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={isLogin ? "current-password" : "new-password"} required minLength={isLogin ? 1 : 8} placeholder={isLogin ? "••••••••" : "En az 8 karakter"} /><button type="button" className="password-toggle" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"} aria-pressed={showPassword}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="m4 4 16 16" />}</svg></button></div></label>
       {!isLogin && <label>Şifre (tekrar)<div className="password-field"><input type={showConfirm ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required minLength={8} /><button type="button" className="password-toggle" onClick={() => setShowConfirm((value) => !value)} aria-label={showConfirm ? "Şifreyi gizle" : "Şifreyi göster"} aria-pressed={showConfirm}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showConfirm && <path d="m4 4 16 16" />}</svg></button></div></label>}
-      {error && <p className="form__error" role="alert">{error}</p>}<button type="submit" className="btn btn--primary btn--wide" disabled={busy}>{busy ? "Lütfen bekle…" : isLogin ? "Giriş yap" : "Kayıt ol"}</button></form>
+      {error && <p className="form__error" role="alert">{error}</p>}
+      {isLogin && loginVerifyRequired && <div className="login-verify-recovery"><label>Hesap e-posta adresi<input type="email" value={loginVerifyEmail} onChange={(event) => setLoginVerifyEmail(event.target.value)} autoComplete="email" placeholder="kayit@eposta.com" /></label><button type="button" className="btn btn--ghost btn--wide" onClick={() => void onStartLoginVerification()} disabled={busy}>{busy ? "Gönderiliyor…" : "Doğrulama kodu gönder"}</button></div>}
+      <button type="submit" className="btn btn--primary btn--wide" disabled={busy}>{busy ? "Lütfen bekle…" : isLogin ? "Giriş yap" : "Kayıt ol"}</button></form>
     <p className="muted switch">{isLogin ? "Hesabın yok mu? " : "Zaten hesabın var mı? "}<a href={isLogin ? "#/register" : "#/login"}>{isLogin ? "Kayıt ol" : "Giriş yap"}</a></p>
   </section>;
 }
