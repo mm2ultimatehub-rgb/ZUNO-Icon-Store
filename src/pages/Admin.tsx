@@ -5,6 +5,7 @@ import { EmptyState, ErrorState } from "../components/ui";
 import SoftLoader from "../components/SoftLoader";
 import StorageGauge from "../components/StorageGauge";
 import { useToast } from "../lib/toast";
+import { requireSupabase } from "../lib/supabase";
 
 const STORAGE_CAP = 1024 * 1024 * 1024;
 
@@ -13,6 +14,7 @@ export default function Admin() {
   const toast = useToast();
   const [icons, setIcons] = useState<CatalogIcon[]>([]);
   const [used, setUsed] = useState(0);
+  const [dailyIcons, setDailyIcons] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [refresh, setRefresh] = useState(0);
@@ -21,12 +23,17 @@ export default function Admin() {
     setLoading(true);
     setError("");
     try {
-      const [items, bytes] = await Promise.all([
+      const dayStart = new Date();
+      dayStart.setHours(0, 0, 0, 0);
+      const [items, bytes, daily] = await Promise.all([
         fetchCatalog({ sort: "new", limit: 5000 }),
         fetchZunoStorageUsage(),
+        requireSupabase().from("zuno_icon_catalog").select("id", { count: "exact", head: true }).gte("created_at", dayStart.toISOString()),
       ]);
+      if (daily.error) throw daily.error;
       setIcons(items);
       setUsed(bytes);
+      setDailyIcons(daily.count ?? 0);
     } catch (reason) {
       setError(toMessage(reason));
     } finally {
@@ -58,6 +65,17 @@ export default function Admin() {
   return <section className="admin-page">
     <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Yenile</button></div>
     <StorageGauge usedBytes={used} quotaBytes={STORAGE_CAP} />
+    <section className="admin-release-card">
+      <div className="admin-release-card__top">
+        <div><p className="eyebrow">OTOMATİK APK GÜNCELLEMESİ</p><h2>Günlük ikon hedefi</h2></div>
+        <strong>{dailyIcons} / 20</strong>
+      </div>
+      <div className="admin-release-card__track"><span style={{ width: `${Math.min(100, dailyIcons / 20 * 100)}%` }} /></div>
+      <p className="muted">{dailyIcons >= 20
+        ? "Günlük hedef tamamlandı. ZUNO'nun yeni ikon kataloğu senkronize edilip imzalı APK derlemesi başlatılır."
+        : `Bugün ${20 - dailyIcons} yeni herkese açık ikon daha gerekli. Sistem her saat kontrol eder.`}</p>
+      <small className="admin-note">Günlük sayaç Azerbaycan saatine göre çalışır. Aynı gün içinde en fazla bir otomatik APK güncellemesi tetiklenir.</small>
+    </section>
     <div className="admin-heading"><div><h2>Topluluk paylaşımları</h2><p className="muted">{icons.length} paylaşım listeleniyor</p></div></div>
     {icons.length === 0 ? <EmptyState title="Henüz paylaşım yok" text="Kullanıcıların yüklediği görseller burada görünür." /> :
       <div className="admin-grid">{icons.map((icon) => <article className="admin-item" key={icon.id}>
