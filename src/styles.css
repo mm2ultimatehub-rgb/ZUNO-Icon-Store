@@ -594,3 +594,15 @@ body { background:#071214; }
   .authbox .form input{min-height:55px}
 }
 @media(prefers-reduced-motion:reduce){.authbox,.authbox .form__error{animation:none!important}}
+
+/* Login verification recovery panel and password toggle alignment fix */
+.authbox .login-verify-recovery{
+  display:grid;gap:12px;padding:15px;border:1px solid rgba(190,247,236,.2);
+  border-radius:20px;background:rgba(153,230,215,.055);
+  animation:auth-arrive .35s ease both;
+}
+.authbox .login-verify-recovery label{display:grid;gap:8px;color:#c5ded8;font-size:14px}
+.authbox .login-verify-recovery input{width:100%;min-width:0}
+.authbox .password-toggle:hover{transform:translateY(-50%) scale(1.05)}
+.authbox .password-toggle:active{transform:translateY(-50%) scale(.94)}
+@media(prefers-reduced-motion:reduce){.authbox .login-verify-recovery{animation:none!important}}
