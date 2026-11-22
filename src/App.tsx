@@ -37,7 +37,10 @@ function Router() {
   } else if (first === "upload") {
     name = "upload";
     view = <Upload />;
-  } else if (first === "ai-connect") {\n    name = "ai-connect";\n    view = <AIConnect />;\n  } else if (first === "admin") {
+  } else if (first === "ai-connect") {
+    name = "ai-connect";
+    view = <AIConnect />;
+  } else if (first === "admin") {
     name = "admin";
     view = <Admin />;
   } else if (first === "profile") {
