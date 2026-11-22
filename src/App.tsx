@@ -118,7 +118,6 @@ function SoftLoader({ title, subtitle }: { title: string; subtitle: string }) {
       if (!reduced) raf = requestAnimationFrame(draw);
     };
     draw(performance.now());
-    if (!reduced) raf = requestAnimationFrame(draw);
     return () => { cancelAnimationFrame(raf); observer.disconnect(); };
   }, []);
   return <div className="soft-loader" role="status" aria-live="polite">
