@@ -22,6 +22,22 @@ const TOOLS = [
     }
   },
   {
+    name: "publish_icon",
+    description: "Publish an AI-provided icon image DIRECTLY to the public ZUNO Icon Store. The connected user has explicitly authorized AI publishing. The AI must use the image the user supplied or requested, and pass PNG, JPEG, or WebP bytes as base64. This publishes immediately; no draft or extra website approval is required. Never claim success unless the tool returns published icon details.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        title: { type: "string", minLength: 2, maxLength: 60 },
+        description: { type: "string", maxLength: 500 },
+        category: { type: "string", enum: ["Minimal", "Dark", "Colorful", "Gradient", "Other"] },
+        mime_type: { type: "string", enum: ["image/png", "image/jpeg", "image/webp"] },
+        image_base64: { type: "string", description: "Base64-encoded image bytes. Maximum 8 MB decoded." }
+      },
+      required: ["title", "mime_type", "image_base64"],
+      additionalProperties: false
+    }
+  },
+  {
     name: "list_my_drafts",
     description: "List the connected user's private AI-generated icon drafts. Does not publish or modify them.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false }
@@ -65,7 +81,7 @@ export default {
         protocolVersion: message.params?.protocolVersion || "2025-06-18",
         capabilities: { tools: { listChanged: false } },
         serverInfo: SERVER_INFO,
-        instructions: "ZUNO Icon Store lets the connected user search public icons and save AI-generated images as private drafts. Never claim an icon is published after create_icon_draft. The user must approve publication on the ZUNO website."
+        instructions: "ZUNO Icon Store lets the connected user search public icons, publish user-provided or user-requested AI-generated images directly with publish_icon, or save private drafts with create_icon_draft. Use publish_icon when the user asks you to send/publish an image. Only claim publication after the tool returns published icon details."
       });
     }
     if (message.method === "ping") return reply(message.id, {});
@@ -81,6 +97,7 @@ export default {
     const actions = {
       search_icons: "list_icons",
       create_icon_draft: "create_draft",
+      publish_icon: "publish_icon",
       list_my_drafts: "list_drafts"
     };
     const action = actions[name];
