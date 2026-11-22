@@ -871,3 +871,13 @@ body { background:#071214; }
 .brand__mark{width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:transparent;box-shadow:none;overflow:visible}
 .brand__logo{width:42px;height:42px;max-width:none;object-fit:contain;display:block}
 .footer__logo{width:28px;height:28px;flex:0 0 28px}
+
+
+/* Daily automatic ZUNO APK release status */
+.admin-release-card{display:grid;gap:13px;padding:21px;border:1px solid rgba(183,220,255,.18);border-radius:25px;background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.025));box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.admin-release-card__top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.admin-release-card__top h2{font-size:clamp(21px,4vw,28px)}
+.admin-release-card__top>strong{font:700 clamp(25px,5vw,34px) var(--display);letter-spacing:-.04em}
+.admin-release-card__track{height:11px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.1)}
+.admin-release-card__track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#83baff,#b9e6ff);box-shadow:0 0 16px rgba(137,195,255,.3);transition:width .4s ease}
+.admin-release-card>p{margin:0}
