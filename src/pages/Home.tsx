@@ -35,7 +35,7 @@ export default function Home() {
       }
     }, 12000);
 
-    fetchCatalog({ category, search: term, sort })
+    fetchCatalog({ category, search: term, sort, ids: favoritesOnly ? [...liked] : undefined })
       .then((data) => {
         if (alive && !timedOut) {
           setIcons(data);
@@ -54,7 +54,7 @@ export default function Home() {
       alive = false;
       window.clearTimeout(timer);
     };
-  }, [category, term, sort, attempt]);
+  }, [category, term, sort, attempt, favoritesOnly, liked]);
   useEffect(() => {
     if (!user) { setLiked(new Set()); setFavoritesOnly(false); return; }
     let alive = true;
