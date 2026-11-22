@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../lib/auth";
-import { navigate } from "../lib/router";
 import { deleteIcon, fetchCatalog, fetchZunoStorageUsage, formatSize, toMessage, type CatalogIcon } from "../lib/storeApi";
 import { EmptyState, ErrorState } from "../components/ui";
 import SoftLoader from "../components/SoftLoader";
@@ -22,7 +21,7 @@ export default function Admin() {
     setError("");
     try {
       const [items, bytes] = await Promise.all([
-        fetchCatalog({ sort: "new" }),
+        fetchCatalog({ sort: "new", limit: 5000 }),
         fetchZunoStorageUsage(),
       ]);
       setIcons(items);
