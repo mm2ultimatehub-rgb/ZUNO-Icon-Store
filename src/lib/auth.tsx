@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 
-type AuthState = { user: User | null; username: string | null; ready: boolean };
-const AuthContext = createContext<AuthState>({ user: null, username: null, ready: false });
+type AuthState = { user: User | null; username: string | null; isAdmin: boolean; ready: boolean };
+const AuthContext = createContext<AuthState>({ user: null, username: null, isAdmin: false, ready: false });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -32,7 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { alive = false; };
   }, [user]);
 
-  return <AuthContext.Provider value={{ user, username, ready }}>{children}</AuthContext.Provider>;
+  const isAdmin = user?.app_metadata?.role === "admin";
+  return <AuthContext.Provider value={{ user, username, isAdmin, ready }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthState { return useContext(AuthContext); }
