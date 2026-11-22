@@ -7,9 +7,9 @@ import { useToast } from "../lib/toast";
 import { EmptyState, GoButton } from "../components/ui";
 import UploadWaveLoader from "../components/UploadWaveLoader";
 
-const ACCEPT = "image/png,image/webp,image/svg+xml";
+const ACCEPT = "image/png,image/jpeg,.jpg,.jpeg,image/webp,image/svg+xml";
 const MAX_FILE_SIZE = 40 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/png", "image/webp", "image/svg+xml"];
+const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 
 export default function Upload() {
   const { user, ready } = useAuth();
@@ -48,7 +48,7 @@ export default function Upload() {
   function pick(candidate: File | undefined) {
     setError("");
     if (!candidate) return;
-    if (!ALLOWED_TYPES.includes(candidate.type)) { setError("Yalnızca PNG, WebP veya SVG yükleyebilirsin."); return; }
+    if (!ALLOWED_TYPES.includes(candidate.type)) { setError("Yalnızca PNG, JPG, JPEG, WebP veya SVG yükleyebilirsin."); return; }
     if (candidate.size > MAX_FILE_SIZE) { setError("Dosya boyutu en fazla 40 MB olabilir."); return; }
     setFile(candidate);
     setImageLink("");
@@ -127,7 +127,7 @@ export default function Upload() {
         const mime = (blob.type || response.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
         if (!ALLOWED_TYPES.includes(mime)) throw new Error("Bağlantı PNG, WebP veya SVG görseli döndürmüyor. Pinterest için pin.it bağlantısını kullan.");
         if (blob.size === 0 || blob.size > MAX_FILE_SIZE) throw new Error("Görsel boş veya 40 MB sınırını aşıyor.");
-        const extension = mime === "image/svg+xml" ? "svg" : mime === "image/webp" ? "webp" : "png";
+        const extension = mime === "image/svg+xml" ? "svg" : mime === "image/webp" ? "webp" : mime === "image/jpeg" ? "jpg" : "png";
         uploadFile = new File([blob], `zuno-link-image.${extension}`, { type: mime });
       }
       if (!uploadFile) throw new Error("Önce bir dosya seç veya görsel bağlantısı ekle.");
@@ -144,7 +144,7 @@ export default function Upload() {
   const imageSource = preview || resolvedLink?.imageUrl || (linkLoaded ? imageLink.trim() : "");
 
   return <>
-    <section className="authbox authbox--wide glass"><h1>İkon yükle</h1><p className="muted">PNG, WebP veya SVG · en fazla 40 MB</p>
+    <section className="authbox authbox--wide glass"><h1>İkon yükle</h1><p className="muted">PNG, JPG, JPEG, WebP veya SVG · en fazla 40 MB</p>
       <form className="form" onSubmit={onSubmit} noValidate>
         <div className={`drop ${drag ? "drop--over" : ""} ${imageSource ? "drop--has" : ""}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={onDrop}>
           <button type="button" className="drop__btn" onClick={() => input.current?.click()}>{imageSource ? <img src={imageSource} alt="Görsel önizlemesi" /> : <span>Dosyayı buraya sürükle ya da <u>seç</u></span>}</button>
