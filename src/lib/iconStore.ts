@@ -1,6 +1,6 @@
 import { requireSupabase } from "./supabase";
 export type IconCategory = "Minimal" | "Dark" | "Colorful" | "Gradient" | "Other";
-export type StoreIcon = { id: string; title: string; description: string; category: string; username: string | null; asset_url: string; like_count: number; created_at: string };
+export type StoreIcon = { id: string; title: string; description: string; category: string; username: string | null; asset_url: string; like_count: number; created_at: string };\nexport type ResolvedPinterestImage = { sourceUrl: string; imageUrl: string; mimeType: string };
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/webp", "image/svg+xml"];
 
@@ -43,6 +43,55 @@ export async function uploadIcon(input: { file: File; title: string; description
     await client.storage.from("zuno-icons").remove([path]);
     throw error;
   }
+  return data;
+}
+
+
+export async function resolvePinterestImage(url: string): Promise<ResolvedPinterestImage> {
+  const client = requireSupabase();
+  const { data, error } = await client.functions.invoke("zuno-resolve-pinterest-image", { body: { url } });
+  if (error) {
+    const context = (error as { context?: unknown }).context;
+    if (context && typeof context === "object" && "json" in context && typeof context.json === "function") {
+      const payload = await (context as Response).clone().json().catch(() => null) as { error?: string } | null;
+      if (payload?.error) throw new Error(payload.error);
+    }
+    throw error;
+  }
+  if (!data?.imageUrl || !data?.sourceUrl) throw new Error(data?.error || "Pinterest görseli çözümlenemedi.");
+  return data as ResolvedPinterestImage;
+}
+
+export async function uploadExternalIcon(input: {
+  sourceUrl: string;
+  imageUrl: string;
+  title: string;
+  description?: string;
+  category?: IconCategory;
+}) {
+  const client = requireSupabase();
+  const { data: auth } = await client.auth.getUser();
+  if (!auth.user) throw new Error("İkon paylaşmak için giriş yapmalısın.");
+  const title = input.title.trim();
+  if (title.length < 2 || title.length > 60) throw new Error("İkon adı 2–60 karakter olmalı.");
+  const image = new URL(input.imageUrl);
+  const source = new URL(input.sourceUrl);
+  if (image.protocol !== "https:" || image.hostname !== "i.pinimg.com") throw new Error("Pinterest görsel adresi güvenli değil.");
+  if (source.protocol !== "https:" || !(source.hostname === "pin.it" || source.hostname === "pinterest.com" || source.hostname.endsWith(".pinterest.com"))) {
+    throw new Error("Pinterest kaynak bağlantısı geçersiz.");
+  }
+  const { data, error } = await client.from("zuno_icons").insert({
+    user_id: auth.user.id,
+    title,
+    description: input.description?.trim() ?? "",
+    category: input.category ?? "Other",
+    storage_path: null,
+    mime_type: "image/jpeg",
+    file_size: null,
+    source_url: source.href,
+    external_image_url: image.href,
+  }).select().single();
+  if (error) throw error;
   return data;
 }
 
