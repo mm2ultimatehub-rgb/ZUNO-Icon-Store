@@ -45,6 +45,7 @@ export default function StorageGauge({ usedBytes, quotaBytes = QUOTA }: { usedBy
     let raf = 0;
     let frame = 0;
     let smooth = 0;
+    let lastShown = -1;
     let last = 0;
     let width = 0;
     let height = 0;
@@ -135,7 +136,8 @@ export default function StorageGauge({ usedBytes, quotaBytes = QUOTA }: { usedBy
 
       smooth += (goal - smooth) * (1 - Math.pow(.001, dt || .016));
       if (Math.abs(goal - smooth) < .0003) smooth = goal;
-      setDisplay(smooth * 100);
+      const shown = smooth * 100;
+      if (Math.abs(shown - lastShown) >= 0.12 || shown === goal * 100) { lastShown = shown; setDisplay(shown); }
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
