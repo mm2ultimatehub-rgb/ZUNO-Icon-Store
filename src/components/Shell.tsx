@@ -20,7 +20,7 @@ export function Shell({ route, children }: { route: string; children: ReactNode 
           {!ready ? <span className="shimmer chip-skel" /> : user ? <a className="btn btn--ghost btn--sm" href="#/profile"><span className="avatar">{(username ?? "?").slice(0, 1).toUpperCase()}</span><span className="hide-sm">@{username ?? "profil"}</span></a> : <><a className="btn btn--ghost btn--sm hide-sm" href="#/login">Giriş yap</a><a className="btn btn--primary btn--sm" href="#/register">Kayıt ol</a></>}
         </div>
       </header>
-      <main className="page">{children}</main>
+      <main className="page"><div className="route-view" key={route}>{children}</div></main>
       <footer className="footer">ZUNO Icon Store · Topluluğun ürettiği ikonlar</footer>
       <nav className="tabbar glass" aria-label="Alt menü">
         <a className={is("home")} href="#/"><NavIcon kind="home" /><span>Keşfet</span></a>
