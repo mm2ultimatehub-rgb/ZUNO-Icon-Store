@@ -326,3 +326,57 @@ h1, h2, h3 { font-family: var(--display); letter-spacing: -0.03em; margin: 0; li
 .upload-progress-overlay .soft-loader-stage { width: min(70vw, 250px); }
 @media (max-width: 390px) { .zuno-otp-cells { gap: 5px; } .zuno-otp-cell { border-radius: 12px; } .zuno-otp-cell::after { border-radius: 11px; } }
 @media (prefers-reduced-motion: reduce) { .zuno-otp-cell, .zuno-otp-cell > strong, .otp-liquid, .soft-loader-status i { transition: none !important; animation: none !important; opacity: .8; } }
+
+
+/* ZUNO identity refresh — deep teal glass, soft mineral highlights */
+:root {
+  --bg: #071214;
+  --ink: #effaf7;
+  --ink-2: #b4cfca;
+  --ink-3: #7f9f99;
+  --violet: #70d8c8;
+  --cyan: #a3f0e4;
+  --pink: #d6bd8b;
+  --glass: rgba(190, 244, 232, .055);
+  --glass-strong: rgba(190, 244, 232, .105);
+  --edge: rgba(193, 244, 233, .14);
+  --edge-hi: rgba(238, 255, 251, .38);
+  --danger: #ff8e9a;
+}
+body { background: #071214; }
+.aurora { background: radial-gradient(100% 80% at 50% -8%, #173d3b 0%, #0b2020 40%, #071214 76%); }
+.orb--a { background: radial-gradient(circle, #236e67, transparent 68%); opacity: .42; }
+.orb--b { background: radial-gradient(circle, #4b9f94, transparent 68%); opacity: .24; }
+.orb--c { background: radial-gradient(circle, #9a8052, transparent 68%); opacity: .16; }
+.glass { background: linear-gradient(145deg, rgba(210,255,246,.105), rgba(113,183,174,.025)); border-color: rgba(198,245,235,.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(255,255,255,.025), 0 22px 60px -26px rgba(0,0,0,.72); }
+.brand__mark { background: linear-gradient(145deg,#d6fff5,#67c9b8 54%,#326f68); color:#09201e; box-shadow: 0 8px 28px rgba(99,220,202,.22), inset 0 1px rgba(255,255,255,.85); }
+.grad { background: linear-gradient(100deg,#effffb 0%,#9ce8dc 48%,#d9c69c 100%); -webkit-background-clip:text; background-clip:text; }
+.btn--primary { color:#08201e; background:linear-gradient(135deg,#c7fff2,#75d5c7 62%,#b6c8a9); border-color:rgba(230,255,249,.64); box-shadow:0 10px 28px rgba(91,206,190,.19),inset 0 1px rgba(255,255,255,.8); }
+.btn--primary:hover { filter:brightness(1.08); box-shadow:0 14px 34px rgba(91,206,190,.25),inset 0 1px rgba(255,255,255,.9); }
+.btn--ghost:hover,.chip--on,.chip:hover { border-color:rgba(163,240,228,.4); background:rgba(130,222,207,.11); color:#effffb; }
+.search:focus-within,.select:focus { border-color:rgba(163,240,228,.58); box-shadow:0 0 0 4px rgba(110,220,204,.1); }
+.hero { padding-top:clamp(54px,9vw,104px); padding-bottom:48px; }
+.hero h1 { max-width:850px; font-size:clamp(40px,7vw,76px); letter-spacing:-.065em; }
+.hero .lead { max-width:600px; font-size:clamp(15px,2vw,18px); line-height:1.75; color:#b6d0ca; }
+.toolbar { border-radius:26px; background:linear-gradient(145deg,rgba(201,255,244,.085),rgba(80,143,135,.035)); }
+.card { border-color:rgba(189,242,231,.14); background:linear-gradient(150deg,rgba(198,250,240,.09),rgba(39,83,79,.12)); }
+.card:hover { border-color:rgba(170,245,231,.38); box-shadow:0 24px 58px rgba(0,0,0,.34),0 0 30px rgba(82,204,188,.08); }
+.card__preview,.detail__preview { background:radial-gradient(circle at 50% 35%,rgba(122,220,205,.14),rgba(9,30,30,.25) 68%),linear-gradient(145deg,rgba(198,255,245,.07),rgba(255,255,255,.015)); }
+.pill { border-color:rgba(163,240,228,.2); background:rgba(116,214,199,.09); color:#b9f2e8; }
+.form input:focus,.form textarea:focus,.form .select:focus { border-color:#8de2d4; box-shadow:0 0 0 4px rgba(110,220,204,.12); }
+.search input::placeholder,.form input::placeholder,.form textarea::placeholder { color:#789b94; }
+.tabbar { background:rgba(8,28,28,.78); border-color:rgba(186,240,229,.18); }
+.soft-loader { color:#e7fff9; }
+.soft-loader > strong { color:#eafffa; }
+.soft-loader-shape-name { color:#a5d8cf; }
+.soft-loader-status { color:#a3f0e4; }
+.soft-loader-status i { background:#b6fff1; box-shadow:0 0 12px rgba(135,239,220,.6); }
+.soft-loader > small { color:#8eb6ad; }
+.upload-progress-overlay { background:rgba(3,15,16,.84); }
+.upload-progress-overlay .soft-loader { border-color:rgba(180,246,233,.2); background:linear-gradient(145deg,rgba(25,77,72,.48),rgba(5,23,24,.68)); }
+@media (max-width:760px) {
+  .hero { padding-top:34px; }
+  .hero h1 { font-size:clamp(38px,11vw,58px); }
+  .grid { gap:13px; }
+  .topbar { background:rgba(8,27,27,.76); }
+}
