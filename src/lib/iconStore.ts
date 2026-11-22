@@ -3,7 +3,7 @@ export type IconCategory = "Minimal" | "Dark" | "Colorful" | "Gradient" | "Other
 export type StoreIcon = { id: string; title: string; description: string; category: string; username: string | null; asset_url: string; like_count: number; created_at: string };
 export type ResolvedPinterestImage = { sourceUrl: string; imageUrl: string; mimeType: string };
 const MAX_FILE_SIZE = 40 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/png", "image/webp", "image/svg+xml"];
+const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 
 export async function listIcons(options?: { category?: string; search?: string }): Promise<StoreIcon[]> {
   const client = requireSupabase();
@@ -31,11 +31,11 @@ export async function uploadIcon(input: { file: File; title: string; description
   const client = requireSupabase();
   const { data: auth } = await client.auth.getUser();
   if (!auth.user) throw new Error("İkon yüklemek için giriş yapmalısın.");
-  if (!ALLOWED_TYPES.includes(input.file.type)) throw new Error("Yalnızca PNG, WebP veya SVG yükleyebilirsin.");
+  if (!ALLOWED_TYPES.includes(input.file.type)) throw new Error("Yalnızca PNG, JPG, JPEG, WebP veya SVG yükleyebilirsin.");
   if (input.file.size > MAX_FILE_SIZE) throw new Error("Dosya boyutu en fazla 40 MB olabilir.");
   const title = input.title.trim();
   if (title.length < 2 || title.length > 60) throw new Error("İkon adı 2–60 karakter olmalı.");
-  const ext = input.file.type === "image/svg+xml" ? "svg" : input.file.type === "image/webp" ? "webp" : "png";
+  const ext = input.file.type === "image/svg+xml" ? "svg" : input.file.type === "image/webp" ? "webp" : input.file.type === "image/jpeg" ? "jpg" : "png";
   const path = `${auth.user.id}/${crypto.randomUUID()}.${ext}`;
   const { error: uploadError } = await client.storage.from("zuno-icons").upload(path, input.file, { contentType: input.file.type, cacheControl: "31536000", upsert: false });
   if (uploadError) throw uploadError;
