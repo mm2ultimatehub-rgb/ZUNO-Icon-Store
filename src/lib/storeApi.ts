@@ -75,9 +75,22 @@ export async function fetchCatalog(options: {
   if (sort === "popular") query = query.order("downloads", { ascending: false }).order("created_at", { ascending: false });
   else if (sort === "liked") query = query.order("like_count", { ascending: false }).order("created_at", { ascending: false });
   else query = query.order("created_at", { ascending: false });
-  const { data, error } = await withTimeout(query.limit(120));
-  if (error) throw error;
-  return (data ?? []) as CatalogIcon[];
+  // Abort the underlying PostgREST request as well as guarding the UI.
+  // A Promise timeout alone leaves a stalled network request running.
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), 8000);
+  try {
+    const { data, error } = await withTimeout(query.limit(120).abortSignal(controller.signal), 9000);
+    if (error) throw error;
+    return (data ?? []) as CatalogIcon[];
+  } catch (reason) {
+    if (controller.signal.aborted) {
+      throw new Error("İkon sunucusuna ulaşılamadı. Bağlantıyı kontrol edip tekrar dene.");
+    }
+    throw reason;
+  } finally {
+    window.clearTimeout(timer);
+  }
 }
 
 export async function fetchIcon(id: string): Promise<CatalogIcon | null> {
