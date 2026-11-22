@@ -709,7 +709,7 @@ body { background:#071214; }
 /* ZUNO motion pass: route entrances, image reveal and liquid upload waves */
 .route-view{animation:zuno-route-in .58s cubic-bezier(.16,1,.3,1) both;transform-origin:50% 20%}
 @keyframes zuno-route-in{0%{opacity:0;transform:translate3d(0,16px,0) scale(.992);filter:blur(7px)}100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}}
-.card{animation:zuno-card-in .62s cubic-bezier(.16,1,.3,1) both}
+.card{animation:zuno-card-in .62s cubic-bezier(.16,1,.3,1)}
 @keyframes zuno-card-in{0%{opacity:0;transform:translateY(18px) scale(.975);filter:blur(5px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
 .card__thumb{isolation:isolate}
 .card__thumb img,.detail__preview img{transition:transform .8s cubic-bezier(.2,.8,.2,1),filter .6s ease}
@@ -739,3 +739,6 @@ body { background:#071214; }
 @keyframes upload-track{to{transform:translateX(340%)}}
 .upload-wave-loader small{max-width:290px;color:rgba(220,232,249,.62);font-size:12px;line-height:1.6}
 @media(prefers-reduced-motion:reduce){.route-view,.card,.upload-wave-loader__image img,.upload-wave-loader__wave,.upload-wave-loader__spark,.upload-wave-loader__track i{animation:none!important}.card__thumb img,.detail__preview img,.drop__btn img{transition:none!important}}
+
+.brand__mark{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(166,205,244,.045));border:1px solid rgba(224,239,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.34),0 7px 22px rgba(0,0,0,.2),0 0 20px rgba(172,207,245,.1)}
+.brand__logo{display:block;width:35px;height:35px;overflow:visible;filter:drop-shadow(0 2px 4px rgba(184,214,246,.24))}
