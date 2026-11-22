@@ -54,3 +54,21 @@ npm run build
 ```
 
 The public Supabase values can be overridden with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. See [docs/android-integration.md](docs/android-integration.md) for the read-only Android catalog contract.
+
+
+## ZUNO AI Connect (MCP)
+
+The remote MCP endpoint is:
+
+`https://zuno-icon-store-mcp.mm2ultimatehub.workers.dev/mcp`
+
+It uses Streamable HTTP and per-user Bearer tokens. Users create and revoke their personal tokens in **Profile → AI Connect**. Raw tokens are displayed only once; the database stores SHA-256 hashes.
+
+Available tools:
+- `search_icons` — search the public icon catalog.
+- `create_icon_draft` — save an AI-generated PNG/JPEG/WebP (up to 8 MB) as a private draft.
+- `list_my_drafts` — list the connected user's private drafts.
+
+Publishing is deliberately not exposed as an MCP tool. The user must sign in to ZUNO and explicitly approve publication in AI Connect. The `zuno-mcp-api` Edge Function performs server-side storage/catalog operations; the Cloudflare Worker holds only the public Supabase publishable key and Edge Function URL.
+
+The deployed Supabase migration is also committed at `supabase/migrations/20261123090000_zuno_mcp_tokens_and_ai_icon_drafts.sql`.
