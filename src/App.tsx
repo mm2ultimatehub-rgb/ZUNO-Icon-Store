@@ -227,9 +227,13 @@ export default function App() {
     try {
       if (authMode === "register") {
         const result = await signUpWithUsername({ username, email, password });
+        if (result.user?.identities?.length === 0) {
+          throw new Error("Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı dene.");
+        }
         if (!result.session) {
           setPendingEmail(email.trim());
           setSignupOtp("");
+          setResendCooldown(30);
           setAuthMessage("E-posta adresine gönderilen 6 haneli kodu aşağıya gir.");
         } else {
           setUser(result.user);
@@ -239,6 +243,8 @@ export default function App() {
       } else {
         const signedIn = await signInWithUsername(username, password);
         setUser(signedIn);
+        setPendingEmail("");
+        setSignupOtp("");
         setAuthOpen(false);
         setPassword("");
       }
@@ -348,13 +354,13 @@ export default function App() {
         <button className="modal-close" onClick={() => setAuthOpen(false)} aria-label="Kapat"><IconMark name="close" /></button>
         <div className="modal-emblem">Z</div><div className="eyebrow">ZUNO COMMUNITY</div><h2 id="auth-title">{authMode === "login" ? "Tekrar hoş geldin." : "Aramıza katıl."}</h2><p className="modal-subtitle">{authMode === "login" ? "Koleksiyonunu keşfetmeye devam et." : "Bir hesap oluştur ve tasarımlarını paylaş."}</p>
         <div className="auth-tabs"><button className={authMode === "login" ? "selected" : ""} onClick={() => { setAuthMode("login"); setAuthError(""); setAuthMessage(""); }}>Giriş yap</button><button className={authMode === "register" ? "selected" : ""} onClick={() => { setAuthMode("register"); setAuthError(""); setAuthMessage(""); }}>Kayıt ol</button></div>
-        {pendingEmail ? <form onSubmit={event => void handleVerifySignupOtp(event)} className="modal-form">
+        {pendingEmail && authMode === "register" ? <form onSubmit={event => void handleVerifySignupOtp(event)} className="modal-form">
           <p className="otp-instructions"><strong>{pendingEmail}</strong> adresine gönderilen doğrulama kodunu gir. Gelen kutunu ve spam klasörünü kontrol et.</p>
           <AnimatedOtpInput value={signupOtp} onChange={setSignupOtp} />
           {authError && <p className="form-error" role="alert">{authError}</p>}{authMessage && <p className="form-success" role="status">{authMessage}</p>}
           <button className="button button-primary submit-button" disabled={authBusy || signupOtp.length !== 6}>{authBusy ? "Doğrulanıyor…" : "E-postayı doğrula"}</button>
           <button type="button" className="otp-resend" disabled={authBusy || resendCooldown > 0} onClick={() => void handleResendSignupOtp()}>{resendCooldown > 0 ? `Tekrar gönder · ${resendCooldown} sn` : "Kodu tekrar gönder"}</button>
-          <button type="button" className="otp-resend" disabled={authBusy} onClick={() => { setPendingEmail(""); setSignupOtp(""); setAuthError(""); setAuthMessage(""); }}>E-posta adresini değiştir</button>
+          <button type="button" className="otp-resend" disabled={authBusy} onClick={() => { setPendingEmail(""); setSignupOtp(""); setResendCooldown(0); setAuthError(""); setAuthMessage(""); }}>E-posta adresini değiştir</button>
         </form> : <form onSubmit={event => void handleAuth(event)} className="modal-form">
           <label>Kullanıcı adı<input required minLength={3} maxLength={24} autoComplete="username" value={username} onChange={event => setUsername(event.target.value)} placeholder="ornek_kullanici" /></label>
           {authMode === "register" && <label>E-posta<input required type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="ornek@eposta.com" /></label>}
