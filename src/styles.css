@@ -854,3 +854,14 @@ body { background:#071214; }
 .aiconnect__notice{font-size:13px;color:#8ed6ad}
 .aiconnect__guide p{font-size:13px;line-height:1.65;opacity:.75;margin:0}
 @media(max-width:560px){.aiconnect__item{align-items:flex-start;flex-direction:column}.aiconnect__item>.row{width:100%;flex-wrap:wrap}.aiconnect__endpoint{overflow:hidden}.aiconnect__endpoint code{font-size:11px}}
+
+
+/* Shared ZUNO brand marks */
+.footer{display:flex;align-items:center;justify-content:center;gap:9px}
+.footer__logo{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(184,214,246,.22))}
+.brand__logo{object-fit:contain}
+.aiconnect__brand{display:flex;align-items:center;gap:15px;margin-bottom:18px}
+.aiconnect__brand>img{width:58px;height:58px;flex:0 0 58px;object-fit:contain;filter:drop-shadow(0 5px 14px rgba(184,214,246,.2))}
+.aiconnect__brand h1{margin:2px 0 0;font-family:var(--display);font-size:clamp(27px,4vw,38px);line-height:1.1}
+.aiconnect__brand .aiconnect__eyebrow{margin:0}
+@media(max-width:420px){.aiconnect__brand{gap:11px}.aiconnect__brand>img{width:48px;height:48px;flex-basis:48px}}
