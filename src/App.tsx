@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import IconDetail from "./pages/IconDetail";
 import Profile from "./pages/Profile";
 import Upload from "./pages/Upload";
+import Admin from "./pages/Admin";
 
 function Router() {
   const [first = "", second = ""] = useRoute();
@@ -35,6 +36,9 @@ function Router() {
   } else if (first === "upload") {
     name = "upload";
     view = <Upload />;
+  } else if (first === "admin") {
+    name = "admin";
+    view = <Admin />;
   } else if (first === "profile") {
     name = "profile";
     view = <Profile key="me" />;
