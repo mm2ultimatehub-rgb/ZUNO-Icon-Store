@@ -1,7 +1,7 @@
 import { requireSupabase } from "./supabase";
 export type IconCategory = "Minimal" | "Dark" | "Colorful" | "Gradient" | "Other";
 export type StoreIcon = { id: string; title: string; description: string; category: string; username: string | null; asset_url: string; like_count: number; created_at: string };
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/webp", "image/svg+xml"];
 
 export async function listIcons(options?: { category?: string; search?: string }): Promise<StoreIcon[]> {
@@ -31,7 +31,7 @@ export async function uploadIcon(input: { file: File; title: string; description
   const { data: auth } = await client.auth.getUser();
   if (!auth.user) throw new Error("İkon yüklemek için giriş yapmalısın.");
   if (!ALLOWED_TYPES.includes(input.file.type)) throw new Error("Yalnızca PNG, WebP veya SVG yükleyebilirsin.");
-  if (input.file.size > MAX_FILE_SIZE) throw new Error("Dosya boyutu en fazla 5 MB olabilir.");
+  if (input.file.size > MAX_FILE_SIZE) throw new Error("Dosya boyutu en fazla 10 MB olabilir.");
   const title = input.title.trim();
   if (title.length < 2 || title.length > 60) throw new Error("İkon adı 2–60 karakter olmalı.");
   const ext = input.file.type === "image/svg+xml" ? "svg" : input.file.type === "image/webp" ? "webp" : "png";
