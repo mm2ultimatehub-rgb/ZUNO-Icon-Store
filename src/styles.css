@@ -606,3 +606,101 @@ body { background:#071214; }
 .authbox .password-toggle:hover{transform:translateY(-50%) scale(1.05)}
 .authbox .password-toggle:active{transform:translateY(-50%) scale(.94)}
 @media(prefers-reduced-motion:reduce){.authbox .login-verify-recovery{animation:none!important}}
+
+
+/* ZUNO OTP — premium liquid-glass code entry, inspired by Yumuşak Kod Girişi */
+.authbox:has(.zuno-otp) { width:min(560px,100%); }
+.authbox:has(.zuno-otp) .form { gap:22px; }
+.authbox:has(.zuno-otp) .form > label { gap:12px; }
+.zuno-otp {
+  height:clamp(68px,15vw,84px);
+  margin:8px 0 7px;
+  padding:3px;
+  border-radius:25px;
+  isolation:isolate;
+}
+.zuno-otp::before {
+  content:"";position:absolute;inset:-12px -8px;z-index:-1;border-radius:32px;
+  background:radial-gradient(ellipse at 50% 100%,rgba(111,225,207,.13),transparent 68%);
+  filter:blur(13px);opacity:.9;pointer-events:none;
+}
+.zuno-otp-cells { gap:clamp(6px,1.8vw,11px); }
+.zuno-otp-cell {
+  border-radius:clamp(15px,3.8vw,21px);
+  border:1px solid rgba(190,245,235,.17);
+  background:
+    radial-gradient(120% 80% at 18% 0%,rgba(255,255,255,.12),transparent 58%),
+    linear-gradient(150deg,rgba(211,255,247,.075),rgba(12,49,47,.24));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.19),inset 0 -12px 22px rgba(0,0,0,.12),0 10px 24px rgba(0,0,0,.2);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+  transition:border-color .32s ease,transform .42s cubic-bezier(.2,.85,.2,1),background .35s ease,box-shadow .35s ease;
+}
+.zuno-otp-cell::after {
+  inset:1px;border-radius:inherit;
+  background:linear-gradient(145deg,rgba(255,255,255,.16),transparent 38%,rgba(122,231,211,.035) 78%);
+}
+.zuno-otp-cell > i {
+  width:5px;height:5px;background:rgba(185,231,221,.42);
+  box-shadow:0 0 10px rgba(163,240,228,.16);
+  transition:transform .3s ease,opacity .3s ease;
+}
+.zuno-otp-cell > strong {
+  color:#f0fffb;font:700 clamp(24px,6vw,32px)/1 var(--display);
+  text-shadow:0 3px 16px rgba(0,0,0,.24);
+  transform:translateY(7px) scale(.72);
+  transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .24s ease;
+}
+.otp-liquid {
+  height:0;inset:auto 0 0;
+  background:linear-gradient(180deg,rgba(163,240,228,.04),rgba(91,204,187,.20) 70%,rgba(82,180,166,.26));
+  transition:height .48s cubic-bezier(.16,1,.3,1);
+}
+.otp-liquid::before {
+  content:"";position:absolute;left:-30%;top:-7px;width:160%;height:13px;
+  border-radius:50%;background:rgba(205,255,246,.18);filter:blur(5px);
+}
+.otp-cell-glint {
+  position:absolute;z-index:1;inset:-60% auto -60% -80%;width:45%;
+  transform:rotate(18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.17),transparent);
+  opacity:0;pointer-events:none;
+}
+.zuno-otp-cell.filled {
+  border-color:rgba(163,240,228,.46);
+  transform:translateY(-3px);
+  background:linear-gradient(145deg,rgba(157,242,225,.17),rgba(38,116,105,.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 10px 26px rgba(56,179,160,.12),0 0 0 1px rgba(163,240,228,.045);
+}
+.zuno-otp-cell.filled .otp-liquid { height:100%; }
+.zuno-otp-cell.filled .otp-cell-glint { opacity:1;animation:otp-glint .8s cubic-bezier(.2,.7,.2,1) both; }
+.zuno-otp-cell.filled > strong { opacity:1;transform:translateY(0) scale(1); }
+.zuno-otp-cell.filled > i { transform:scale(0);opacity:0; }
+.zuno-otp-cell.active:not(.filled) {
+  border-color:rgba(174,255,240,.72);
+  transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 0 0 3px rgba(118,226,207,.09),0 9px 28px rgba(57,181,163,.12);
+  animation:otp-active-breathe 2s ease-in-out infinite;
+}
+.zuno-otp:focus-within .zuno-otp-cell { border-color:rgba(163,240,228,.24); }
+.zuno-otp:focus-within .zuno-otp-cell.active:not(.filled) { border-color:rgba(174,255,240,.76); }
+.zuno-otp-real-input { caret-color:transparent!important; }
+.otp-actions { gap:7px;margin-top:14px; }
+.otp-resend {
+  min-height:40px;padding:8px 15px;border:1px solid rgba(190,245,235,.12);
+  border-radius:999px;background:rgba(172,238,225,.055);
+  color:#b9ded5;font-size:13px;font-weight:600;
+  transition:background .25s,border-color .25s,transform .25s,color .25s;
+}
+.otp-resend:hover:not(:disabled) { color:#effffb;border-color:rgba(163,240,228,.34);background:rgba(130,222,207,.12);transform:translateY(-1px); }
+.otp-resend:active:not(:disabled) { transform:scale(.97); }
+.otp-resend:disabled { opacity:.48; }
+@keyframes otp-active-breathe { 0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 0 0 2px rgba(118,226,207,.06),0 9px 24px rgba(57,181,163,.08)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 4px rgba(118,226,207,.09),0 9px 30px rgba(57,181,163,.15)} }
+@keyframes otp-glint { 0%{transform:translateX(0) rotate(18deg)}100%{transform:translateX(440%) rotate(18deg)} }
+@media(max-width:390px) {
+  .zuno-otp { height:68px; }
+  .zuno-otp-cells { gap:5px; }
+  .zuno-otp-cell { border-radius:14px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .zuno-otp-cell,.zuno-otp-cell>strong,.otp-liquid,.otp-resend { transition:none!important;animation:none!important; }
+  .zuno-otp-cell.filled .otp-cell-glint { animation:none!important; }
+}
