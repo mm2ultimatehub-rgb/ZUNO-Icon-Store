@@ -84,7 +84,14 @@ export async function signUpWithUsername(input: { username: string; email: strin
 export async function signInWithUsername(username: string, password: string) {
   const client = requireSupabase();
   const { data, error } = await client.functions.invoke("username-login", { body: { username: username.trim().toLowerCase(), password } });
-  if (error) throw error;
+  if (error) {
+    const context = (error as { context?: unknown }).context;
+    if (context instanceof Response) {
+      const payload = await context.clone().json().catch(() => null) as { error?: string } | null;
+      if (payload?.error) throw new Error(payload.error);
+    }
+    throw error;
+  }
   if (!data?.session?.access_token || !data?.session?.refresh_token) throw new Error(data?.error ?? "Giriş yapılamadı.");
   const { error: sessionError } = await client.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token });
   if (sessionError) throw sessionError;
