@@ -84,7 +84,7 @@ export default function AIConnect() {
  return <div className="aiconnect">
   <section className="authbox authbox--wide glass">
    <div className="aiconnect__brand"><img src="./zuno-logo.svg?v=2" alt="ZUNO" /><div><div className="aiconnect__eyebrow">ZUNO · MODEL CONTEXT PROTOCOL</div><h1>AI Connect</h1></div></div>
-   <p className="muted">Kullandığın AI uygulamasını ZUNO Icon Store'a bağla. AI mevcut ikonları arayabilir ve senin için özel ikon taslakları oluşturabilir.</p>
+   <p className="muted">Kullandığın AI uygulamasını ZUNO Icon Store'a bağla. AI mevcut ikonları arayabilir, senin gönderdiğin görselleri doğrudan yayınlayabilir veya özel taslak oluşturabilir.</p>
    <div className="aiconnect__endpoint"><span>MCP SERVER</span><code>https://zuno-icon-store-mcp.mm2ultimatehub.workers.dev/mcp</code><button className="btn btn--ghost btn--sm" type="button" onClick={()=>void navigator.clipboard.writeText("https://zuno-icon-store-mcp.mm2ultimatehub.workers.dev/mcp")}>Adresi kopyala</button></div>
    <h2>Kişisel bağlantı anahtarı</h2>
    <p className="muted small">Her AI istemcisi için ayrı anahtar oluştur. Anahtar yalnızca oluşturulduğunda gösterilir; kaybedersen iptal edip yenisini oluştur.</p>
@@ -96,7 +96,7 @@ export default function AIConnect() {
    <div className="aiconnect__guide"><strong>Bağlantı ayarları</strong><p>AI uygulaman MCP destekliyorsa uzak sunucu olarak yukarıdaki adresi ekle. Kimlik doğrulamada Bearer token seçip oluşturduğun ZUNO anahtarını kullan. İstemcinin Streamable HTTP desteği olmalı.</p></div>
   </section>
   <section className="authbox authbox--wide glass">
-   <h2>AI tarafından oluşturulan taslaklar</h2><p className="muted small">AI'nın gönderdiği ikonlar yalnızca sana görünür. Buradan onaylayıp mağazada yayınlayabilir veya silebilirsin.</p>
+   <h2>AI tarafından oluşturulan taslaklar</h2><p className="muted small">Taslak modunu kullanan AI uygulamalarının gönderdiği ikonlar yalnızca sana görünür. Doğrudan yayınlama için AI uygulaması publish_icon aracını kullanmalıdır.</p>
    {drafts.length===0?<p className="muted small">Henüz AI taslağın yok. Bağladığın AI'ya bir ikon oluşturmasını söyleyebilirsin.</p>:<div className="aiconnect__list">{drafts.map(d=><div className="aiconnect__item" key={d.id}><div><strong>{d.title}</strong><small>{d.category} · {(d.file_size/1024).toFixed(0)} KB · {date(d.created_at)}</small><small>{d.description||"Açıklama yok"}</small></div><div className="row"><button className="btn btn--primary btn--sm" disabled={busy} onClick={()=>void draftAction(d.id,"publish_draft")}>Yayınla</button><button className="btn btn--danger btn--sm" disabled={busy} onClick={()=>void draftAction(d.id,"delete_draft")}>Sil</button></div></div>)}</div>}
   </section>
  </div>;
