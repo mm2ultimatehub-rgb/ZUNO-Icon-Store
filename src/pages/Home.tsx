@@ -6,9 +6,11 @@ import { useToast } from "../lib/toast";
 import SoftLoader from "../components/SoftLoader";
 import { EmptyState, ErrorState, GoButton, IconCard } from "../components/ui";
 import PromoVideo from "../components/PromoVideo";
+import { useSiteConfig } from "../lib/siteConfig";
 
 export default function Home() {
   const { user } = useAuth();
+  const { config } = useSiteConfig();
   const toast = useToast();
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
@@ -74,9 +76,9 @@ export default function Home() {
   const filtering = category !== "All" || term.trim() !== "" || favoritesOnly;
   return (
     <>
-      <section className="hero"><p className="eyebrow">ZUNO TOPLULUĞU</p><h1>Ana ekranına yeni bir <span className="grad">görünüm</span> ver.</h1><p className="lead">Topluluğun tasarladığı ZUNO ikonlarını keşfet, indir ve kendi tasarımını paylaş.</p><div className="hero__actions"><GoButton to="/upload">İkon yükle</GoButton><GoButton to="/download" variant="ghost">ZUNO APK’yı indir</GoButton>{!user && <GoButton to="/register" variant="ghost">Ücretsiz kayıt ol</GoButton>}</div><div className="hero-art" aria-hidden="true"><div className="hero-art__halo hero-art__halo--one" /><div className="hero-art__halo hero-art__halo--two" /><div className="hero-art__glass"><span className="hero-art__shine" /><span className="hero-art__symbol">Z</span><span className="hero-art__caption">ZUNO / ICON LAB</span></div><span className="hero-art__tile hero-art__tile--a">✳</span><span className="hero-art__tile hero-art__tile--b">◈</span><span className="hero-art__tile hero-art__tile--c">✦</span><span className="hero-art__orbit-dot" /></div></section>
-      <PromoVideo />
-      <section className="toolbar glass" aria-label="Arama ve filtreler">
+      <section className="hero"><p className="eyebrow">ZUNO TOPLULUĞU</p><h1>Ana ekranına yeni bir <span className="grad">görünüm</span> ver.</h1><p className="lead">Topluluğun tasarladığı ZUNO ikonlarını keşfet, indir ve kendi tasarımını paylaş.</p><div className="hero__actions"><GoButton to="/upload">İkon yükle</GoButton><GoButton to="/download" variant="ghost">ZUNO APK’yı indir</GoButton>{!user && <GoButton to="/register" variant="ghost">Ücretsiz kayıt ol</GoButton>}</div><div className="hero-art" aria-hidden="true"><div className="hero-art__halo hero-art__halo--one" /><div className="hero-art__halo hero-art__halo--two" /><div className="hero-art__glass"><span className="hero-art__shine" /><span className="hero-art__symbol">Z</span><span className="hero-art__caption">ZUNO / ICON LAB</span></div><span className="hero-art__tile hero-art__tile--a">✳</span><span className="hero-art__tile hero-art__tile--b">◈</span><span className="hero-art__tile hero-art__tile--c">✦</span><span className="hero-art__orbit-dot" /></div></section>}
+      {config.home.showPromoVideo && <PromoVideo />}
+      {config.home.showGallery && <><section className="toolbar glass" aria-label="Arama ve filtreler">
         <label className="search"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m20 20-4.2-4.2M10.5 17a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg><input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="İkon veya üretici ara…" aria-label="İkon ara" maxLength={60} /></label>
         <select className="select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Sıralama"><option value="new">En yeni</option><option value="popular">En çok indirilen</option><option value="liked">En çok beğenilen</option></select>
         <div className="chips" role="group" aria-label="Kategoriler">{user && <button type="button" className={`chip ${favoritesOnly ? "chip--on" : ""}`} aria-pressed={favoritesOnly} onClick={() => setFavoritesOnly((value) => !value)}>Beğendiklerim</button>}{[{ value: "All", label: "Tümü" }, ...CATEGORIES].map((c) => <button key={c.value} type="button" className={`chip ${category === c.value ? "chip--on" : ""}`} aria-pressed={category === c.value} onClick={() => setCategory(c.value)}>{c.label}</button>)}</div>
@@ -85,6 +87,7 @@ export default function Home() {
       {status === "error" && <ErrorState message={error} onRetry={() => setAttempt((n) => n + 1)} />}
       {status === "ready" && visibleIcons.length === 0 && <EmptyState title={favoritesOnly ? "Henüz beğendiğin ikon yok" : filtering ? "Sonuç bulunamadı" : "Henüz paylaşılmış ikon yok"} text={favoritesOnly ? "Beğendiğin ikonları kalp düğmesiyle kaydet; burada kolayca bulabilirsin." : filtering ? "Aramayı veya kategoriyi değiştirmeyi dene." : "İlk ikonu sen yükle, topluluğu başlat."} action={favoritesOnly || filtering ? <button type="button" className="btn btn--ghost" onClick={() => { setSearch(""); setCategory("All"); setFavoritesOnly(false); }}>Filtreleri temizle</button> : <GoButton to="/upload">İlk ikonu yükle</GoButton>} />}
       {status === "ready" && visibleIcons.length > 0 && <><p className="count">{favoritesOnly ? `${visibleIcons.length} beğenilen ikon` : `${visibleIcons.length} ikon`}</p><div className="grid">{visibleIcons.map((icon, i) => <IconCard key={icon.id} icon={icon} index={i} liked={liked.has(icon.id)} onLike={onLike} />)}</div></>}
+      </>}
     </>
   );
 }
