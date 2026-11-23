@@ -5,7 +5,7 @@ export default function About() {
   return <section className="about-page">
     <a className="back" href="#/">← Ana sayfaya dön</a>
     <div className="about-hero glass">
-      <div className="about-logo"><img src="./zuno-logo.svg" alt="ZUNO" /></div>
+      <div className="about-logo"><img src={config.brand.logoUrl || "./zuno-logo.svg"} alt="ZUNO" /></div>
       <p className="eyebrow">{config.about.eyebrow}</p>
       <h1>{config.about.title} <span className="grad">{config.about.highlight}</span></h1>
       <p className="lead">{config.about.description}</p>
