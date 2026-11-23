@@ -31,27 +31,27 @@ export default function Admin() {
   const [dailyIcons, setDailyIcons] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [dataWarnings, setDataWarnings] = useState<string[]>([]);
   const [refresh, setRefresh] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
-    try {
-      const dayStart = bakuDayStartISO();
-      const [items, bytes, daily] = await Promise.all([
-        fetchCatalog({ sort: "new", limit: 5000 }),
-        fetchZunoStorageUsage(),
-        requireSupabase().from("zuno_icon_catalog").select("id", { count: "exact", head: true }).gte("created_at", dayStart),
-      ]);
-      if (daily.error) throw daily.error;
-      setIcons(items);
-      setUsed(bytes);
-      setDailyIcons(daily.count ?? 0);
-    } catch (reason) {
-      setError(toMessage(reason));
-    } finally {
-      setLoading(false);
-    }
+    const dayStart = bakuDayStartISO();
+    const results = await Promise.allSettled([
+      fetchCatalog({ sort: "new", limit: 5000 }),
+      fetchZunoStorageUsage(),
+      requireSupabase().from("zuno_icon_catalog").select("id", { count: "exact", head: true }).gte("created_at", dayStart),
+    ]);
+    const warnings: string[] = [];
+    if (results[0].status === "fulfilled") setIcons(results[0].value);
+    else { setIcons([]); warnings.push("Topluluk ikonları alınamadı: " + toMessage(results[0].reason)); }
+    if (results[1].status === "fulfilled") setUsed(results[1].value);
+    else warnings.push("Depolama verisi alınamadı: " + toMessage(results[1].reason));
+    if (results[2].status === "fulfilled" && !results[2].value.error) setDailyIcons(results[2].value.count ?? 0);
+    else warnings.push("Günlük ikon sayısı alınamadı: " + toMessage(results[2].status === "rejected" ? results[2].reason : results[2].value.error));
+    setDataWarnings(warnings);
+    setLoading(false);
   }, []);
 
   useEffect(() => { if (isAdmin) void load(); }, [isAdmin, load, refresh]);
@@ -73,10 +73,12 @@ export default function Admin() {
   }
 
   if (loading) return <SoftLoader title="Yönetim paneli hazırlanıyor" subtitle="Paylaşımlar ve depolama kontrol ediliyor" />;
-  if (error) return <ErrorState message={error} onRetry={() => setRefresh((n) => n + 1)} />;
+
 
   return <section className="admin-page">
     <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}. İşlemlerini buradan kolayca yönet.</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Verileri yenile</button></div>
+    {error && <ErrorState message={error} onRetry={() => setRefresh((n) => n + 1)} />}
+    {dataWarnings.length > 0 && <div className="admin-data-warning" role="status"><strong>Bazı istatistikler yüklenemedi</strong>{dataWarnings.map((warning) => <p key={warning}>{warning}</p>)}<button type="button" className="btn btn--ghost btn--sm" onClick={() => setRefresh((n) => n + 1)}>Tekrar dene</button></div>}
     <div className="admin-overview" aria-label="Yönetim özeti">
       <article className="admin-overview__card"><span>Toplam ikon paylaşımı</span><strong>{icons.length.toLocaleString("tr-TR")}</strong><small>Yayındaki topluluk içerikleri</small></article>
       <article className="admin-overview__card"><span>Bugünkü yeni ikonlar</span><strong>{dailyIcons.toLocaleString("tr-TR")} <i>/ 20</i></strong><small>Otomatik APK hedefi</small></article>
