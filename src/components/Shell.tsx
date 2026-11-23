@@ -27,7 +27,7 @@ export function Shell({ route, children }: { route: string; children: ReactNode 
       <main className="page"><div className="route-view" key={route}>{children}</div></main>
       <footer className="footer"><img className="footer__logo" src={config.brand.logoUrl || "./zuno-logo.svg?v=2"} alt="" /><span>{config.footer.text}</span><div className="footer__links">{config.navigation.showDownload && <a href="#/download">{config.navigation.downloadLabel}</a>}{config.navigation.showAbout && <a href="#/about">{config.navigation.aboutLabel}</a>}<a href={config.footer.githubUrl} target="_blank" rel="noreferrer">GitHub</a></div></footer>
       <nav className="tabbar glass" aria-label="Alt menü">
-        <a className={is("home")} href="#/"><NavIcon kind="home" /><span>Keşfet</span></a>
+        <a className={is("home")} href="#/"><NavIcon kind="home" /><span>{config.navigation.discoverLabel}</span></a>
         {config.navigation.showDownload && <a className={is("download")} href="#/download"><NavIcon kind="download" /><span>{config.navigation.downloadLabel}</span></a>}
         {config.navigation.showUpload && <a className={is("upload")} href="#/upload"><NavIcon kind="upload" /><span>{config.navigation.uploadLabel}</span></a>}
         <a className={is("profile")} href={profileHref}><NavIcon kind="user" /><span>{user ? "Profil" : "Giriş"}</span></a>
