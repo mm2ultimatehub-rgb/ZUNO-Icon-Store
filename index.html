@@ -48,48 +48,48 @@
     <noscript><p style="text-align:center;color:#b4b9cc">Bu site için JavaScript gerekli.</p></noscript>
     <script>
       (function () {
+        var root = document.getElementById("root");
         var timer = window.setTimeout(function () {
           var startup = document.getElementById("startup");
-          if (startup && document.getElementById("root").contains(startup)) {
+          if (startup && root && root.contains(startup)) {
             startup.classList.add("retry");
-            document.getElementById("startup-status").textContent = "Açılış tamamlanamadı";
+            document.getElementById("startup-status").textContent = "Yükleme beklenenden uzun sürdü";
           }
         }, 25000);
-        var recoveryKey = "zuno-icon-store-asset-recovery";
+
+        function showStartupError(message) {
+          var startup = document.getElementById("startup");
+          if (!startup || !root || !root.contains(startup)) return;
+          window.clearTimeout(timer);
+          startup.classList.add("retry");
+          document.getElementById("startup-status").textContent = "Site açılamadı";
+          var detail = document.getElementById("startup-error");
+          if (detail) detail.textContent = message;
+        }
+
+        // Avoid automatic reload loops when a cached or missing bundle fails.
         window.addEventListener("error", function (event) {
           if (event.target && event.target.tagName === "SCRIPT") {
-            window.clearTimeout(timer);
-
-            // GitHub Pages/CDN can briefly serve an old index.html that points
-            // to a hashed JS bundle from the previous deployment. Retry once
-            // with a fresh document URL before showing the permanent error.
-            try {
-              if (!sessionStorage.getItem(recoveryKey)) {
-                sessionStorage.setItem(recoveryKey, "1");
-                var freshUrl = new URL(window.location.href);
-                freshUrl.searchParams.set("zuno-refresh", String(Date.now()));
-                window.location.replace(freshUrl.toString());
-                return;
-              }
-            } catch (_) {}
-
-            var startup = document.getElementById("startup");
-            if (startup) {
-              startup.classList.add("retry");
-              document.getElementById("startup-status").textContent = "Uygulama dosyası yüklenemedi";
-            }
+            showStartupError("Site dosyası yüklenemedi. Yeniden dene; sorun sürerse biraz sonra tekrar aç.");
+          } else if (!event.target && event.message) {
+            showStartupError("Açılış sırasında bir hata oluştu. Sayfayı yenileyip tekrar dene.");
           }
         }, true);
 
-        // Clear the one-time recovery guard after the app has mounted.
-        window.setTimeout(function () {
+        window.addEventListener("unhandledrejection", function () {
+          showStartupError("Site başlatılırken beklenmeyen bir işlem başarısız oldu. Yeniden deneyebilirsin.");
+        });
+
+        var observer = new MutationObserver(function () {
           var startup = document.getElementById("startup");
-          if (!startup || !document.getElementById("root").contains(startup)) {
-            try { sessionStorage.removeItem(recoveryKey); } catch (_) {}
+          if (!startup || !root.contains(startup)) {
+            window.clearTimeout(timer);
+            observer.disconnect();
           }
-        }, 15000);
+        });
+        observer.observe(root, { childList: true, subtree: true });
       })();
-    </script>
+    </script>ipt>
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
