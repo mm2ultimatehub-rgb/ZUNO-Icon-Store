@@ -38,6 +38,7 @@ export default function AdminSiteManager(){
  }
  function validHttps(value:string,label:string){
   if(!value.trim())return true;
+  if(label==="Logo adresi"&&(value.startsWith("./")||value.startsWith("/")))return true;
   try{const url=new URL(value);if(url.protocol!=="https:")throw new Error();return true;}catch{toast(label+" geçerli bir HTTPS bağlantısı olmalı.","error");return false;}
  }
  async function save(){
