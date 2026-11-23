@@ -42,13 +42,13 @@ export default function Download() {
       </div>
       <a className="download-cta" href={downloadUrl}>
         <span className="download-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19.5h16" /></svg></span>
-        <span><strong>APK’yı indir</strong><small>Android için doğrudan indirme</small></span>
+        <span><strong>{config.download.buttonLabel}</strong><small>{config.download.buttonHint}</small></span>
         <span className="download-cta__arrow" aria-hidden="true">↓</span>
       </a>
-      <p className="download-safe">İndirme GitHub Releases üzerinden yapılır. Bağlantı her zaman en son kararlı ARM64 APK’yı açar.</p>
-      <a className="download-release-link" href={release?.html_url ?? "https://github.com/mm2ultimatehub-rgb/ZUNO/releases"} target="_blank" rel="noreferrer">Tüm sürümleri ve değişiklik notlarını gör ↗</a>
+      <p className="download-safe">{config.download.safeNote}</p>
+      <a className="download-release-link" href={release?.html_url ?? "https://github.com/mm2ultimatehub-rgb/ZUNO/releases"} target="_blank" rel="noreferrer">{config.download.releaseLabel}</a>
     </div>
     <div className="download-features">{config.download.features.map((feature,index)=><article className="glass download-feature" key={index}><span>{String(index+1).padStart(2,"0")}</span><h2>{feature.title}</h2><p>{feature.description}</p></article>)}</div>
-    <div className="download-note glass"><strong>Kurulum hakkında</strong><p>APK dosyasını indirdikten sonra Android’in kurulum ekranını aç. Güncelleme yaparken mevcut uygulamanın üzerine kurabilmek için aynı imza anahtarıyla imzalanmış sürümü kullanmalısın.</p></div>
+    <div className="download-note glass"><strong>{config.download.installTitle}</strong><p>{config.download.installDescription}</p></div>
   </section>;
 }
