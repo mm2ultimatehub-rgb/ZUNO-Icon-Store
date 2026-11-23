@@ -5,7 +5,7 @@ import { toMessage } from "../lib/storeApi";
 import { useToast } from "../lib/toast";
 import { DEFAULT_SITE_CONFIG, useSiteConfig, type SiteConfig } from "../lib/siteConfig";
 
-type Section="brand"|"navigation"|"home"|"download"|"about"|"appearance"|"footer";
+type Section=keyof SiteConfig;
 const SECTIONS:{id:Section;label:string;description:string}[]=[
  {id:"brand",label:"Marka & duyuru",description:"Site adı, logo ve üst duyuru alanı"},
  {id:"navigation",label:"Menü",description:"Gezinme bağlantıları ve görünürlük"},
