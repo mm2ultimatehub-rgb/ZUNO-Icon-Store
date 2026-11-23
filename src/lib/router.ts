@@ -7,8 +7,8 @@ function safeDecode(part: string): string {
 /** Hash tabanlı yönlendirme: GitHub Pages'te sunucu ayarı gerektirmez. */
 export function parseHash(): string[] {
   const raw = window.location.hash.replace(/^#\/?/, "");
-  // Supabase e-posta onayı #access_token=... ile döner; bu bir rota değildir.
-  if (!raw || raw.includes("=")) return [];
+  // Supabase e-posta onayı token hashleriyle döner; bunlar uygulama rotası değildir.
+  if (!raw || /^(access_token|refresh_token|token_type|expires_in|error|error_description)=/.test(raw)) return [];
   return raw.split("?")[0].split("/").filter(Boolean).map(safeDecode);
 }
 
