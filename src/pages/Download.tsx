@@ -29,7 +29,7 @@ export default function Download() {
     <a className="back" href="#/">← Mağazaya dön</a>
     <div className="download-hero glass">
       <div className="download-orbit" aria-hidden="true"><span /><span /><span /></div>
-      <div className="download-brand"><img src="./zuno-logo.svg" alt="ZUNO" /></div>
+      <div className="download-brand"><img src={config.brand.logoUrl || "./zuno-logo.svg"} alt="ZUNO" /></div>
       <p className="eyebrow">{config.download.eyebrow}</p>
       <h1>{config.download.title} <span className="grad">{config.download.highlight}</span></h1>
       <p className="lead">{config.download.description}</p>
