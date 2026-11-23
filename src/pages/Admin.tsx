@@ -4,6 +4,7 @@ import { deleteIcon, fetchCatalog, fetchZunoStorageUsage, formatSize, toMessage,
 import { EmptyState, ErrorState } from "../components/ui";
 import SoftLoader from "../components/SoftLoader";
 import StorageGauge from "../components/StorageGauge";
+import AdminPromoManager from "../components/AdminPromoManager";
 import { useToast } from "../lib/toast";
 import { requireSupabase } from "../lib/supabase";
 
@@ -76,6 +77,7 @@ export default function Admin() {
   return <section className="admin-page">
     <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Yenile</button></div>
     <StorageGauge usedBytes={used} quotaBytes={STORAGE_CAP} />
+    <AdminPromoManager />
     <section className="admin-release-card">
       <div className="admin-release-card__top">
         <div><p className="eyebrow">OTOMATİK APK GÜNCELLEMESİ</p><h2>Günlük ikon hedefi</h2></div>
