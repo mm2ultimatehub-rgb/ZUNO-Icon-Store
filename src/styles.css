@@ -881,3 +881,67 @@ body { background:#071214; }
 .admin-release-card__track{height:11px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.1)}
 .admin-release-card__track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#83baff,#b9e6ff);box-shadow:0 0 16px rgba(137,195,255,.3);transition:width .4s ease}
 .admin-release-card>p{margin:0}
+
+/* ZUNO APK download and about pages */
+.footer { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.footer__links { display:flex; flex-wrap:wrap; justify-content:center; gap:18px; }
+.footer__links a { color:#a7cfc6; font-size:12px; transition:color .2s; }
+.footer__links a:hover { color:#effaf7; }
+.download-page,.about-page { display:grid; gap:22px; padding-top:12px; }
+.download-hero { position:relative; isolation:isolate; overflow:hidden; display:grid; justify-items:center; text-align:center; gap:14px; padding:clamp(28px,6vw,64px) 22px; border-radius:34px; }
+.download-hero::after { content:""; position:absolute; z-index:-1; width:560px; height:560px; top:-300px; left:50%; transform:translateX(-50%); border-radius:50%; background:radial-gradient(circle,rgba(108,222,202,.18),transparent 68%); pointer-events:none; }
+.download-brand,.about-logo { display:grid; place-items:center; padding:14px; border-radius:27px; background:linear-gradient(145deg,rgba(216,255,248,.17),rgba(105,193,180,.045)); border:1px solid rgba(205,255,247,.25); box-shadow:inset 0 1px rgba(255,255,255,.5),0 18px 50px rgba(45,170,153,.14); }
+.download-brand { width:96px; height:96px; }
+.about-logo { width:76px; height:76px; }
+.download-brand img,.about-logo img { width:100%; height:100%; object-fit:contain; }
+.download-hero .eyebrow,.about-hero .eyebrow { margin:8px 0 0; }
+.download-hero h1,.about-hero h1 { max-width:850px; font-size:clamp(38px,7vw,72px); letter-spacing:-.06em; }
+.download-hero .lead,.about-hero .lead { max-width:620px; margin:0 auto 4px; line-height:1.75; }
+.download-version { display:grid; justify-items:center; gap:5px; margin:8px 0 2px; color:#a9c9c2; font-size:13px; }
+.download-version strong { color:#f0fffb; font:700 20px var(--display); }
+.download-live { display:inline-flex; align-items:center; gap:7px; padding:6px 11px; border:1px solid rgba(151,238,215,.22); border-radius:999px; color:#b9f8e7; background:rgba(88,205,177,.08); font-size:10px; font-weight:800; letter-spacing:.15em; }
+.download-live i { width:6px; height:6px; border-radius:50%; background:#83e9c9; box-shadow:0 0 12px #83e9c9; }
+.download-cta { display:flex; align-items:center; gap:15px; width:min(100%,420px); min-height:78px; padding:12px 17px; border:1px solid rgba(229,255,249,.68); border-radius:22px; color:#09221e; text-align:left; background:linear-gradient(125deg,#e3fff7 0%,#8ce5d4 48%,#c6d7b4 100%); box-shadow:inset 0 1px 0 #fff,0 16px 42px rgba(79,205,184,.22); transition:transform .2s,box-shadow .2s,filter .2s; }
+.download-cta:hover { transform:translateY(-3px); filter:brightness(1.04); box-shadow:inset 0 1px 0 #fff,0 22px 52px rgba(79,205,184,.3); }
+.download-cta__icon { display:grid; place-items:center; flex:none; width:46px; height:46px; border-radius:15px; background:rgba(8,55,48,.1); border:1px solid rgba(8,55,48,.14); }
+.download-cta__icon svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.download-cta > span:nth-child(2) { display:grid; gap:2px; flex:1; }
+.download-cta strong { font:700 17px var(--display); }
+.download-cta small { font-size:12px; opacity:.72; }
+.download-cta__arrow { font-size:26px; }
+.download-safe { max-width:430px; margin:0; color:#8eada5; font-size:12px; line-height:1.6; }
+.download-release-link { color:#b9eee2; font-size:13px; font-weight:600; }
+.download-release-link:hover { color:#fff; }
+.download-orbit { position:absolute; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+.download-orbit span { position:absolute; left:50%; top:50%; width:380px; height:380px; border:1px solid rgba(170,246,231,.08); border-radius:50%; transform:translate(-50%,-50%); }
+.download-orbit span:nth-child(2) { width:520px; height:520px; }
+.download-orbit span:nth-child(3) { width:660px; height:660px; }
+.download-features { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.download-feature,.download-note,.about-card,.about-values { padding:24px; border-radius:24px; }
+.download-feature > span,.about-number { color:#9bdccd; font-size:11px; font-weight:800; letter-spacing:.17em; }
+.download-feature h2,.about-card h2 { margin:12px 0 8px; font-size:20px; }
+.download-feature p,.about-card p,.download-note p,.about-value-list p { margin:0; color:#a8c6bf; font-size:14px; line-height:1.75; }
+.download-note strong { font:700 16px var(--display); }
+.download-note p { margin-top:7px; }
+.about-hero { display:grid; justify-items:start; gap:14px; padding:clamp(28px,6vw,64px); border-radius:34px; }
+.about-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.about-card { display:flex; flex-direction:column; align-items:flex-start; min-height:240px; }
+.about-card a { margin-top:auto; padding-top:20px; color:#b7eee2; font-size:13px; font-weight:700; }
+.about-card a:hover { color:#fff; }
+.about-values { border-radius:26px; }
+.about-values .eyebrow { margin-bottom:10px; }
+.about-values h2 { font-size:clamp(22px,4vw,32px); margin-bottom:22px; }
+.about-value-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.about-value-list > div { padding-top:15px; border-top:1px solid rgba(190,245,235,.15); }
+.about-value-list strong { display:block; margin-bottom:7px; font-size:14px; }
+.about-contact { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 14px; padding:10px; color:#9cbdb5; font-size:13px; }
+.about-contact a { color:#c7f7ec; font-weight:700; }
+.about-contact a:hover { color:#fff; }
+@media (max-width:760px) {
+  .download-features,.about-grid,.about-value-list { grid-template-columns:1fr; }
+  .download-feature,.download-note,.about-card,.about-values { padding:21px; }
+  .download-hero,.about-hero { border-radius:27px; }
+  .download-cta { width:100%; }
+  .footer { padding-bottom:130px; }
+  .footer__links { gap:16px; }
+}
