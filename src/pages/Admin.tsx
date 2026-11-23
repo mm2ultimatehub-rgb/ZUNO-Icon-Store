@@ -76,11 +76,19 @@ export default function Admin() {
   if (error) return <ErrorState message={error} onRetry={() => setRefresh((n) => n + 1)} />;
 
   return <section className="admin-page">
-    <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Yenile</button></div>
-    <StorageGauge usedBytes={used} quotaBytes={STORAGE_CAP} />
-    <AdminSiteManager />
-    <AdminPromoManager />
-    <section className="admin-release-card">
+    <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}. İşlemlerini buradan kolayca yönet.</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Verileri yenile</button></div>
+    <div className="admin-overview" aria-label="Yönetim özeti">
+      <article className="admin-overview__card"><span>Toplam ikon paylaşımı</span><strong>{icons.length.toLocaleString("tr-TR")}</strong><small>Yayındaki topluluk içerikleri</small></article>
+      <article className="admin-overview__card"><span>Bugünkü yeni ikonlar</span><strong>{dailyIcons.toLocaleString("tr-TR")} <i>/ 20</i></strong><small>Otomatik APK hedefi</small></article>
+      <article className="admin-overview__card"><span>Kullanılan depolama</span><strong>{formatSize(used)}</strong><small>Toplam kota: {formatSize(STORAGE_CAP)}</small></article>
+    </div>
+    <nav className="admin-quicknav" aria-label="Yönetim bölümleri">
+      <a href="#admin-site">Siteyi düzenle</a><a href="#admin-promo">Tanıtım içeriği</a><a href="#admin-apk">APK güncellemesi</a><a href="#admin-community">Topluluk ikonları</a>
+    </nav>
+    <section id="admin-storage"><StorageGauge usedBytes={used} quotaBytes={STORAGE_CAP} /></section>
+    <div id="admin-site" className="admin-anchor"><AdminSiteManager /></div>
+    <div id="admin-promo" className="admin-anchor"><AdminPromoManager /></div>
+    <section id="admin-apk" className="admin-release-card">
       <div className="admin-release-card__top">
         <div><p className="eyebrow">OTOMATİK APK GÜNCELLEMESİ</p><h2>Günlük ikon hedefi</h2></div>
         <strong>{dailyIcons} / 20</strong>
@@ -91,7 +99,7 @@ export default function Admin() {
         : `Bugün ${20 - dailyIcons} yeni herkese açık ikon daha gerekli. Sistem her saat kontrol eder.`}</p>
       <small className="admin-note">Günlük sayaç Azerbaycan saatine göre çalışır. Aynı gün içinde en fazla bir otomatik APK güncellemesi tetiklenir.</small>
     </section>
-    <div className="admin-heading"><div><h2>Topluluk paylaşımları</h2><p className="muted">{icons.length} paylaşım listeleniyor</p></div></div>
+    <div id="admin-community" className="admin-heading admin-anchor"><div><h2>Topluluk ikonları</h2><p className="muted">{icons.length} paylaşım listeleniyor. İstenmeyen içerikleri buradan kaldırabilirsin.</p></div></div>
     {icons.length === 0 ? <EmptyState title="Henüz paylaşım yok" text="Kullanıcıların yüklediği görseller burada görünür." /> :
       <div className="admin-grid">{icons.map((icon) => <article className="admin-item" key={icon.id}>
         <img src={icon.asset_url} alt={icon.title} loading="lazy" />
