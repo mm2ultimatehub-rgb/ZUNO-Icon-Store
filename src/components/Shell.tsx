@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useAuth } from "../lib/auth";
 
-function NavIcon({ kind }: { kind: "home" | "upload" | "user" | "admin" }) {
+function NavIcon({ kind }: { kind: "home" | "upload" | "user" | "admin" | "download" }) {
   const d = kind === "home" ? "M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1v-7.5Z" : kind === "upload" ? "M12 16V5m0 0L8 9m4-4 4 4M5 19h14" : kind === "admin" ? "M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Zm-3.5 9 2.3 2.3 4.8-5" : kind === "download" ? "M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" : "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0";
   return <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
