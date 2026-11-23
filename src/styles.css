@@ -1040,3 +1040,35 @@ body { background:#071214; }
 .admin-anchor{scroll-margin-top:86px}
 .admin-page>section,.admin-page>div{min-width:0}
 @media(max-width:760px){.admin-overview{grid-template-columns:1fr;gap:9px}.admin-overview__card{grid-template-columns:1fr auto;align-items:center;padding:14px}.admin-overview__card strong{grid-column:2;grid-row:1/3}.admin-overview__card small{grid-column:1}.admin-quicknav{margin-inline:-2px}.admin-heading{gap:12px}.admin-heading .btn{min-height:42px}}
+
+
+/* Supplied ZUNO Cam Z animation embedded in the homepage hero */
+.hero-cam-z {
+  width: min(100%, 520px);
+  margin: 24px auto 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #0b1214;
+  border: 1px solid rgba(163, 240, 240, .14);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hero-cam-z iframe {
+  display: block;
+  width: 100%;
+  height: 500px;
+  border: 0;
+  background: #0b1214;
+}
+.admin-data-warning {
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 179, 107, .32);
+  border-radius: 18px;
+  background: rgba(255, 179, 107, .07);
+  color: var(--ink);
+}
+.admin-data-warning p { margin: 8px 0; color: var(--ink-2); overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .hero-cam-z { width: 100%; border-radius: 22px; }
+  .hero-cam-z iframe { height: 470px; }
+}
