@@ -11,6 +11,8 @@ import Profile from "./pages/Profile";
 import Upload from "./pages/Upload";
 import Admin from "./pages/Admin";
 import AIConnect from "./pages/AIConnect";
+import Download from "./pages/Download";
+import About from "./pages/About";
 
 function Router() {
   const [first = "", second = ""] = useRoute();
@@ -25,7 +27,13 @@ function Router() {
     );
   }
 
-  if (first === "icon" && second) {
+  if (first === "download") {
+    name = "download";
+    view = <Download />;
+  } else if (first === "about") {
+    name = "about";
+    view = <About />;
+  } else if (first === "icon" && second) {
     name = "icon";
     view = <IconDetail key={second} id={second} />;
   } else if (first === "login") {
