@@ -13,7 +13,7 @@ export default function AdminPromoManager(){
  const [sourceMode,setSourceMode]=useState<"upload"|"url">("upload");const [videoUrl,setVideoUrl]=useState("");
  const [file,setFile]=useState<File|null>(null);const [published,setPublished]=useState(false);
  const [loading,setLoading]=useState(true);const [saving,setSaving]=useState(false);const [error,setError]=useState("");
- useEffect(()=>{let alive=true;requireSupabase().from("zuno_site_promo").select("id,title,description,video_url,storage_path,is_published,updated_at").eq("id","main").maybeSingle()
+ useEffect(()=>{let alive=true;Promise.resolve(requireSupabase().from("zuno_site_promo").select("id,title,description,video_url,storage_path,is_published,updated_at").eq("id","main").maybeSingle())
  .then(({data,error:queryError})=>{if(!alive)return;if(queryError){setError(toMessage(queryError));return;}const row=data as PromoSettings|null;if(row){setPromo(row);setTitle(row.title);setDescription(row.description);setVideoUrl(row.video_url??"");setSourceMode(row.video_url?"url":"upload");setPublished(row.is_published);}})
  .catch(reason=>{if(alive)setError(toMessage(reason))}).finally(()=>{if(alive)setLoading(false)});return()=>{alive=false}},[]);
  const localPreview=useMemo(()=>file?URL.createObjectURL(file):"",[file]);
