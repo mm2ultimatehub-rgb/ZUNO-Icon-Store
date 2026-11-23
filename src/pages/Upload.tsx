@@ -54,7 +54,7 @@ export default function Upload() {
     setImageLink("");
     setLinkLoaded(false);
     setResolvedLink(null);
-    if (!title) setTitle(candidate.name.replace(/\\.[^.]+$/, "").replace(/[-_]+/g, " ").slice(0, 60));
+    if (!title) setTitle(candidate.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").slice(0, 60));
   }
 
   function changeLink(value: string) {
@@ -67,7 +67,7 @@ export default function Upload() {
       try {
         const parsed = new URL(value.trim());
         const name = decodeURIComponent(parsed.pathname.split("/").filter(Boolean).pop() ?? "Paylaşılan görsel");
-        setTitle(name.replace(/\\.[^.]+$/, "").replace(/[-_]+/g, " ").slice(0, 60));
+        setTitle(name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").slice(0, 60));
       } catch { /* Kullanıcı bağlantıyı yazmaya devam ediyor. */ }
     }
   }
