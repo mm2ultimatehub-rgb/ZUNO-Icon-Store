@@ -54,7 +54,7 @@
             startup.classList.add("retry");
             document.getElementById("startup-status").textContent = "Açılış tamamlanamadı";
           }
-        }, 12000);
+        }, 25000);
         var recoveryKey = "zuno-icon-store-asset-recovery";
         window.addEventListener("error", function (event) {
           if (event.target && event.target.tagName === "SCRIPT") {
