@@ -13,6 +13,7 @@ import Admin from "./pages/Admin";
 import AIConnect from "./pages/AIConnect";
 import Download from "./pages/Download";
 import About from "./pages/About";
+import { SiteConfigProvider } from "./lib/siteConfig";
 
 function Router() {
   const [first = "", second = ""] = useRoute();
@@ -67,9 +68,11 @@ function Router() {
 export default function App() {
   return (
     <AuthProvider>
-      <ToastProvider>
-        <Router />
-      </ToastProvider>
+      <SiteConfigProvider>
+        <ToastProvider>
+          <Router />
+        </ToastProvider>
+      </SiteConfigProvider>
     </AuthProvider>
   );
 }
