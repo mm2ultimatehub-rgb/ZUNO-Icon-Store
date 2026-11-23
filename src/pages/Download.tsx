@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSiteConfig } from "../lib/siteConfig";
 
 type Asset = { name: string; size: number; browser_download_url: string };
 type Release = { tag_name: string; published_at: string; html_url: string; assets: Asset[] };
@@ -7,6 +8,7 @@ const FALLBACK = "https://github.com/mm2ultimatehub-rgb/ZUNO/releases/latest/dow
 function size(bytes: number) { return bytes ? (bytes / 1048576).toFixed(1) + " MB" : ""; }
 
 export default function Download() {
+  const { config } = useSiteConfig();
   const [release, setRelease] = useState<Release | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -21,15 +23,16 @@ export default function Download() {
   }, []);
   const apk = release?.assets?.find((a) => a.name === "app-gms-mobile-arm64-release.apk");
   const version = release?.tag_name?.replace(/^v/i, "") ?? "En son sürüm";
+  const downloadUrl = config.download.apkUrl.trim() || (apk?.browser_download_url ?? FALLBACK);
   const date = release?.published_at ? new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(release.published_at)) : "";
   return <section className="download-page">
     <a className="back" href="#/">← Mağazaya dön</a>
     <div className="download-hero glass">
       <div className="download-orbit" aria-hidden="true"><span /><span /><span /></div>
       <div className="download-brand"><img src="./zuno-logo.svg" alt="ZUNO" /></div>
-      <p className="eyebrow">ZUNO ANDROID UYGULAMASI</p>
-      <h1>Müziğin, <span className="grad">kendi ritminde.</span></h1>
-      <p className="lead">ZUNO’yu Android cihazına yükle. Müziğini keşfet, kendi arşivini dinle ve oynatıcını tarzına göre düzenle.</p>
+      <p className="eyebrow">{config.download.eyebrow}</p>
+      <h1>{config.download.title} <span className="grad">{config.download.highlight}</span></h1>
+      <p className="lead">{config.download.description}</p>
       <div className="download-version">
         <span className="download-live"><i /> GÜNCEL SÜRÜM</span>
         <strong>{loading ? "Sürüm kontrol ediliyor…" : "ZUNO " + version}</strong>
@@ -37,7 +40,7 @@ export default function Download() {
         {date && <span>Yayın tarihi: {date}</span>}
         {failed && <span>Canlı sürüm bilgisi alınamadı. İndirme bağlantısı yine en son sürüme yönlendirir.</span>}
       </div>
-      <a className="download-cta" href={apk?.browser_download_url ?? FALLBACK}>
+      <a className="download-cta" href={downloadUrl}>
         <span className="download-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19.5h16" /></svg></span>
         <span><strong>APK’yı indir</strong><small>Android için doğrudan indirme</small></span>
         <span className="download-cta__arrow" aria-hidden="true">↓</span>
@@ -45,11 +48,7 @@ export default function Download() {
       <p className="download-safe">İndirme GitHub Releases üzerinden yapılır. Bağlantı her zaman en son kararlı ARM64 APK’yı açar.</p>
       <a className="download-release-link" href={release?.html_url ?? "https://github.com/mm2ultimatehub-rgb/ZUNO/releases"} target="_blank" rel="noreferrer">Tüm sürümleri ve değişiklik notlarını gör ↗</a>
     </div>
-    <div className="download-features">
-      <article className="glass download-feature"><span>01</span><h2>Kendi müzik alanın</h2><p>Çevrimiçi müzik keşfi ve cihazındaki yerel müzik arşivi tek bir oynatıcı deneyiminde.</p></article>
-      <article className="glass download-feature"><span>02</span><h2>Tarzını yansıt</h2><p>Temalar, oynatıcı görünümü, hareketler ve kişiselleştirme seçenekleri.</p></article>
-      <article className="glass download-feature"><span>03</span><h2>Dinlemeye devam et</h2><p>Arka plan oynatma, Android medya kontrolleri ve desteklenen parçalarda senkronize şarkı sözleri.</p></article>
-    </div>
+    <div className="download-features">{config.download.features.map((feature,index)=><article className="glass download-feature" key={index}><span>{String(index+1).padStart(2,"0")}</span><h2>{feature.title}</h2><p>{feature.description}</p></article>)}</div>
     <div className="download-note glass"><strong>Kurulum hakkında</strong><p>APK dosyasını indirdikten sonra Android’in kurulum ekranını aç. Güncelleme yaparken mevcut uygulamanın üzerine kurabilmek için aynı imza anahtarıyla imzalanmış sürümü kullanmalısın.</p></div>
   </section>;
 }
