@@ -30,7 +30,7 @@ export const DEFAULT_SITE_CONFIG:SiteConfig = {
 function normalizeConfig(raw:unknown):SiteConfig {
   if(!raw||typeof raw!=="object") return DEFAULT_SITE_CONFIG;
   const value=raw as Partial<SiteConfig>;
-  const merge=<K extends keyof SiteConfig>(key:K):SiteConfig[K]=>({...DEFAULT_SITE_CONFIG[key],...(value[key]&&typeof value[key]==="object"?value[key]:{})}) as SiteConfig[K];
+  function merge<K extends keyof SiteConfig>(key:K):SiteConfig[K] { return {...DEFAULT_SITE_CONFIG[key],...(value[key]&&typeof value[key]==="object"?value[key]:{})} as SiteConfig[K]; }
   const download={...merge("download")};
   const incomingFeatures=Array.isArray(value.download?.features)?value.download.features:[];
   download.features=DEFAULT_SITE_CONFIG.download.features.map((fallback,index)=>{
