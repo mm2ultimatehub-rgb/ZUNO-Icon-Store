@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../lib/auth";
 import { deleteIcon, fetchCatalog, fetchZunoStorageUsage, formatSize, toMessage, type CatalogIcon } from "../lib/storeApi";
-import { EmptyState, ErrorState } from "../components/ui";
+import { EmptyState } from "../components/ui";
 import SoftLoader from "../components/SoftLoader";
 import StorageGauge from "../components/StorageGauge";
 import AdminPromoManager from "../components/AdminPromoManager";
@@ -30,13 +30,11 @@ export default function Admin() {
   const [used, setUsed] = useState(0);
   const [dailyIcons, setDailyIcons] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [dataWarnings, setDataWarnings] = useState<string[]>([]);
   const [refresh, setRefresh] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError("");
     const dayStart = bakuDayStartISO();
     const results = await Promise.allSettled([
       fetchCatalog({ sort: "new", limit: 5000 }),
@@ -77,7 +75,6 @@ export default function Admin() {
 
   return <section className="admin-page">
     <div className="admin-heading"><div><p className="eyebrow">ZUNO CONTROL CENTER</p><h1>Yönetim paneli</h1><p className="muted">Hoş geldin, {user.email}. İşlemlerini buradan kolayca yönet.</p></div><button className="btn btn--ghost" type="button" onClick={() => setRefresh((n) => n + 1)}>Verileri yenile</button></div>
-    {error && <ErrorState message={error} onRetry={() => setRefresh((n) => n + 1)} />}
     {dataWarnings.length > 0 && <div className="admin-data-warning" role="status"><strong>Bazı istatistikler yüklenemedi</strong>{dataWarnings.map((warning) => <p key={warning}>{warning}</p>)}<button type="button" className="btn btn--ghost btn--sm" onClick={() => setRefresh((n) => n + 1)}>Tekrar dene</button></div>}
     <div className="admin-overview" aria-label="Yönetim özeti">
       <article className="admin-overview__card"><span>Toplam ikon paylaşımı</span><strong>{icons.length.toLocaleString("tr-TR")}</strong><small>Yayındaki topluluk içerikleri</small></article>
