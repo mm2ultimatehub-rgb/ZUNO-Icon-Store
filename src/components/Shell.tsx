@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import type { ReactNode, CSSProperties } from "react";
+import { useSiteConfig } from "../lib/siteConfig";
 import { useAuth } from "../lib/auth";
 
 function NavIcon({ kind }: { kind: "home" | "upload" | "user" | "admin" | "download" }) {
@@ -8,24 +9,27 @@ function NavIcon({ kind }: { kind: "home" | "upload" | "user" | "admin" | "downl
 
 export function Shell({ route, children }: { route: string; children: ReactNode }) {
   const { user, username, isAdmin, ready } = useAuth();
+  const { config } = useSiteConfig();
+  const themeStyle = { "--violet": config.appearance.primary, "--cyan": config.appearance.cyan, "--pink": config.appearance.pink } as CSSProperties;
   const profileHref = user ? "#/profile" : "#/login";
   const is = (name: string) => (route === name ? "is-active" : undefined);
   return (
-    <div className="shell">
+    <div className="shell" style={themeStyle}>
       <div className="aurora" aria-hidden="true"><i className="orb orb--a" /><i className="orb orb--b" /><i className="orb orb--c" /></div>
       <header className="topbar glass">
-        <a className="brand" href="#/" aria-label="ZUNO Icon Store ana sayfa"><span className="brand__mark" aria-hidden="true"><img className="brand__logo" src="./zuno-logo.svg?v=2" alt="" /></span><span className="brand__text">ZUNO <em>Icon Store</em></span></a>
-        <nav className="topnav" aria-label="Ana menü"><a className={is("home")} href="#/">Keşfet</a><a className={is("download")} href="#/download">Uygulama</a><a className={is("about")} href="#/about">Hakkımızda</a><a className={is("upload")} href="#/upload">Yükle</a>{isAdmin && <a className={is("admin")} href="#/admin">Yönetim</a>}</nav>
+        <a className="brand" href="#/" aria-label="ZUNO Icon Store ana sayfa"><span className="brand__mark" aria-hidden="true"><img className="brand__logo" src={config.brand.logoUrl || "./zuno-logo.svg?v=2"} alt="" /></span><span className="brand__text">{config.brand.siteName} <em>{config.brand.subtitle}</em></span></a>
+        <nav className="topnav" aria-label="Ana menü"><a className={is("home")} href="#/">{config.navigation.discoverLabel}</a>{config.navigation.showDownload && <a className={is("download")} href="#/download">{config.navigation.downloadLabel}</a>}{config.navigation.showAbout && <a className={is("about")} href="#/about">{config.navigation.aboutLabel}</a>}{config.navigation.showUpload && <a className={is("upload")} href="#/upload">{config.navigation.uploadLabel}</a>{isAdmin && <a className={is("admin")} href="#/admin">Yönetim</a>}</nav>
         <div className="topbar__end">
           {!ready ? <span className="shimmer chip-skel" /> : user ? <a className="btn btn--ghost btn--sm" href="#/profile"><span className="avatar">{(username ?? "?").slice(0, 1).toUpperCase()}</span><span className="hide-sm">@{username ?? "profil"}</span></a> : <><a className="btn btn--ghost btn--sm hide-sm" href="#/login">Giriş yap</a><a className="btn btn--primary btn--sm" href="#/register">Kayıt ol</a></>}
         </div>
       </header>
+      {config.announcement.enabled && config.announcement.text && <div className="site-announcement"><span>{config.announcement.text}</span>{config.announcement.linkLabel && config.announcement.linkUrl && <a href={config.announcement.linkUrl} target="_blank" rel="noreferrer">{config.announcement.linkLabel}</a>}</div>}
       <main className="page"><div className="route-view" key={route}>{children}</div></main>
-      <footer className="footer"><img className="footer__logo" src="./zuno-logo.svg?v=2" alt="" /><span>ZUNO · Müzik ve ikon topluluğu</span><div className="footer__links"><a href="#/download">ZUNO APK</a><a href="#/about">Hakkımızda</a><a href="https://github.com/mm2ultimatehub-rgb/ZUNO" target="_blank" rel="noreferrer">GitHub</a></div></footer>
+      <footer className="footer"><img className="footer__logo" src={config.brand.logoUrl || "./zuno-logo.svg?v=2"} alt="" /><span>{config.footer.text}</span><div className="footer__links">{config.navigation.showDownload && <a href="#/download">{config.navigation.downloadLabel}</a>}{config.navigation.showAbout && <a href="#/about">{config.navigation.aboutLabel}</a>}<a href={config.footer.githubUrl} target="_blank" rel="noreferrer">GitHub</a></div></footer>
       <nav className="tabbar glass" aria-label="Alt menü">
         <a className={is("home")} href="#/"><NavIcon kind="home" /><span>Keşfet</span></a>
-        <a className={is("download")} href="#/download"><NavIcon kind="download" /><span>Uygulama</span></a>
-        <a className={is("upload")} href="#/upload"><NavIcon kind="upload" /><span>Yükle</span></a>
+        {config.navigation.showDownload && <a className={is("download")} href="#/download"><NavIcon kind="download" /><span>{config.navigation.downloadLabel}</span></a>}
+        {config.navigation.showUpload && <a className={is("upload")} href="#/upload"><NavIcon kind="upload" /><span>{config.navigation.uploadLabel}</span></a>}
         <a className={is("profile")} href={profileHref}><NavIcon kind="user" /><span>{user ? "Profil" : "Giriş"}</span></a>
         {isAdmin && <a className={is("admin")} href="#/admin"><NavIcon kind="admin" /><span>Yönetim</span></a>}
       </nav>
